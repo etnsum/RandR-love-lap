@@ -18,13 +18,16 @@ class TitleScene extends Phaser.Scene {
     const gameHeight = this.scale.height; // 872
 
 
-    if (!this.game.globalMusic) {
+    // 화면을 한 번 클릭했을 때에만 음악 재생
+    this.input.once('pointerdown', () => {
+        if (!this.game.globalMusic) {
         this.game.globalMusic = this.sound.add('bgm', {
-        loop: true,
-        volume: 0.4
+            loop: true,
+            volume: 0.4
         });
         this.game.globalMusic.play();
-    }
+        }
+    });
 
     // =========================
     // 1) 타이틀 배경
