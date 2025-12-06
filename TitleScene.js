@@ -8,6 +8,8 @@ class TitleScene extends Phaser.Scene {
   preload() {
     // 타이틀 배경 이미지
     this.load.image('titleBg', 'images/bg1.jpg');
+    // 게임 브금
+    this.load.audio('bgm', 'BGM.mp3');
   }
 
   create() {
@@ -15,12 +17,23 @@ class TitleScene extends Phaser.Scene {
     const gameWidth = this.scale.width;   // 800
     const gameHeight = this.scale.height; // 872
 
+
+    if (!this.game.globalMusic) {
+        this.game.globalMusic = this.sound.add('bgm', {
+        loop: true,
+        volume: 0.4
+        });
+        this.game.globalMusic.play();
+    }
+
     // =========================
     // 1) 타이틀 배경
     // =========================
     const bg = this.add.image(gameWidth / 2, gameHeight / 2, 'titleBg');
     bg.setOrigin(0.5);
     bg.setScrollFactor(0);
+
+    
 
     // =========================
     // 2) 버튼 스타일 헬퍼

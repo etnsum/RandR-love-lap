@@ -2,15 +2,18 @@ const config = {
   type: Phaser.AUTO,
   parent: 'game-container',
 
-  // ✅ 기준 해상도 (디자인 기준)
   scale: {
-    mode: Phaser.Scale.FIT,              // 화면에 맞게 축소/확대
-    autoCenter: Phaser.Scale.CENTER_BOTH, // 가운데 정렬
-    width: 800,                          // 우리가 디자인한 "기준" 너비
-    height: 872,                         // 우리가 맞춰둔 "기준" 높이
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800,
+    height: 872,
   },
 
   scene: [TitleScene, Stage1Scene, Stage2Scene, EndingAScene, EndingBScene],
 };
 
-new Phaser.Game(config);
+// 🔥 여기에서 Phaser.Game을 "한 번만" 생성하고 변수에 담아야 한다.
+const game = new Phaser.Game(config);
+
+// 🔥 전역 음악 변수를 붙여준다
+game.globalMusic = null;
