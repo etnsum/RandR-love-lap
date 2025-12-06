@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+    
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;  /* 모바일에서 스크롤 안 생기게 */
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;    /* 캔버스 주변 여백 제거 */
+        }
+    </style>
+
+    <title>Lab Puzzle Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Phaser CDN (한 번만) -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+  </head>
+
+  <body>
+    <div id="game-container"></div>
+
+    <!-- 씬 로드 순서 중요! -->
+    <script src="TitleScene.js"></script>
+    <script src="Stage1Scene.js"></script>
+    <script src="Stage2Scene.js"></script>
+    <script src="EndingAScene.js"></script>
+    <script src="EndingBScene.js"></script>
+
+    <!-- main.js는 맨 마지막 -->
+    <script src="main.js"></script>
+  </body>
+</html>
