@@ -1,8 +1,57 @@
 // // Stage1Scene.js
 
 class Stage1Scene extends Phaser.Scene {
+
   constructor() {
     super('Stage1');
+    this._introVideoEl = null; // ✅ 비디오 DOM 참조 저장
+  }
+
+
+    // ✅ DOM video로 WebM 인트로 재생 (투명 유지)
+  playIntroWebM(onEnd) {
+    // 혹시 남아있으면 제거
+    this.removeIntroWebM();
+
+    const video = document.createElement('video');
+    video.src = 'image/basic/intro.webm';
+    video.autoplay = true;
+    video.muted = true;          // 모바일 자동재생 필수
+    video.playsInline = true;    // iOS/모바일 필수
+    video.preload = 'auto';
+
+    // Phaser 캔버스 위에 덮기
+    video.style.position = 'fixed';
+    video.style.left = '0';
+    video.style.top = '0';
+    video.style.width = '100vw';
+    video.style.height = '100vh';
+    video.style.objectFit = 'contain'; // 꽉채움 원하면 cover
+    video.style.pointerEvents = 'none';
+    video.style.zIndex = '999999';
+
+    document.body.appendChild(video);
+    this._introVideoEl = video;
+
+    const cleanup = () => {
+      this.removeIntroWebM();
+      onEnd?.();
+    };
+
+    video.addEventListener('ended', cleanup, { once: true });
+    video.addEventListener('error', cleanup, { once: true });
+
+    // 일부 환경에서 autoplay가 막히면 catch
+    const p = video.play();
+    if (p && p.catch) p.catch(() => cleanup());
+  }
+
+  removeIntroWebM() {
+    if (this._introVideoEl) {
+      try { this._introVideoEl.pause(); } catch {}
+      try { this._introVideoEl.remove(); } catch {}
+      this._introVideoEl = null;
+    }
   }
 
   preload() {
@@ -36,15 +85,15 @@ class Stage1Scene extends Phaser.Scene {
 
     // 3, 2, 1
     // Stage1Scene.js
-    const FRAME_COUNT = 138;
+    // const FRAME_COUNT = 138;
 
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const key = `intro_${i}`; // 0 ~ 137
-      const fileIndex = i + 1; // 1 ~ 138
-      const file = `image/basic/intro/intro_${String(fileIndex).padStart(2, '0')}.png`;
+    // for (let i = 0; i < FRAME_COUNT; i++) {
+    //   const key = `intro_${i}`; // 0 ~ 137
+    //   const fileIndex = i + 1; // 1 ~ 138
+    //   const file = `image/basic/intro/intro_${String(fileIndex).padStart(2, '0')}.png`;
 
-      this.load.image(key, file);
-    }
+    //   this.load.image(key, file);
+    // }
 
 
 
@@ -119,20 +168,34 @@ class Stage1Scene extends Phaser.Scene {
 
     
       // 3, 2, 1
-      const FRAME_COUNT = 138;
+      // const FRAME_COUNT = 138;
 
-      // ✅ 애니메이션 생성 (한 번만 재생)
-      this.anims.create({
-        key: 'introOnce',
-        frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({
-          key: `intro_${i}`,
-        })),
-        frameRate: 24,
-        repeat: 0,
-      });
+      // // ✅ 애니메이션 생성 (한 번만 재생)
+      // this.anims.create({
+      //   key: 'introOnce',
+      //   frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({
+      //     key: `intro_${i}`,
+      //   })),
+      //   frameRate: 24,
+      //   repeat: 0,
+      // });
 
-      const cx = cam.midPoint.x;
-      const cy = cam.midPoint.y;
+      // const cx = cam.midPoint.x;
+      // const cy = cam.midPoint.y;
+
+      // ✅ 인트로 동안 입력 잠금
+    this.input.enabled = false;
+
+    // ✅ WebM 인트로 재생 (끝나면 입력 풀고 진행)
+    this.playIntroWebM(() => {
+      this.input.enabled = true;
+    });
+
+    // ✅ 씬이 종료/전환되면 비디오 DOM 제거
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.removeIntroWebM());
+    this.events.once(Phaser.Scenes.Events.DESTROY, () => this.removeIntroWebM());
+
+
 
 
     // 4) 트레이(퍼즐판) UI 고정
@@ -151,22 +214,22 @@ class Stage1Scene extends Phaser.Scene {
 
 
       //3, 2, 1
-      const START_DELAY = 600; // 원하는 만큼 (ms)
+      // const START_DELAY = 600; // 원하는 만큼 (ms)
 
-      this.time.delayedCall(START_DELAY, () => {
-        const intro = this.add.sprite(cx, cy, 'intro_0')
-          .setOrigin(0.5)
-          .setDepth(9999)
-          .setScrollFactor(0);
+      // this.time.delayedCall(START_DELAY, () => {
+      //   const intro = this.add.sprite(cx, cy, 'intro_0')
+      //     .setOrigin(0.5)
+      //     .setDepth(9999)
+      //     .setScrollFactor(0);
 
-        intro.play('introOnce');
+      //   intro.play('introOnce');
 
-        intro.once('animationcomplete', () => {
-          intro.destroy();
-          // 여기서 입력 풀기/다음 로직 시작 등
-          // this.input.enabled = true;
-        });
-      });
+      //   intro.once('animationcomplete', () => {
+      //     intro.destroy();
+      //     // 여기서 입력 풀기/다음 로직 시작 등
+      //     // this.input.enabled = true;
+      //   });
+      // });
 
 
 
