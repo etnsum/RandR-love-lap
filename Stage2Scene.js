@@ -319,16 +319,16 @@ class Stage2Scene extends Phaser.Scene {
     let currentPlateIndex = 0;
 
     // 디버그
-    const debugRects = [];
-    const rectGfx = scene.add.graphics()
-      .setDepth(DEPTH_WORLD + 999)   // 1bg 위에 보이게
-      .setScrollFactor(1);           // 월드 기준 (카메라 따라 움직임)
+    // const debugRects = [];
+    // const rectGfx = scene.add.graphics()
+    //   .setDepth(DEPTH_WORLD + 999)   // 1bg 위에 보이게
+    //   .setScrollFactor(1);           // 월드 기준 (카메라 따라 움직임)
 
-    rectGfx.lineStyle(4, 0x00ff00, 1); // 두께, 색, 알파
+    // rectGfx.lineStyle(4, 0x00ff00, 1); // 두께, 색, 알파
 
-    plateRects.forEach((r, i) => {
-      rectGfx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
-    });
+    // plateRects.forEach((r, i) => {
+    //   rectGfx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
+    // });
 
     // 트레이
     const DESIGN_TRAY_X = 638.452;
