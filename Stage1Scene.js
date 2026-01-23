@@ -84,7 +84,7 @@ class Stage1Scene extends Phaser.Scene {
     this.load.image('btnRight', 'image/basic/right_b.png');
 
     // 3, 2, 1
-    Stage1Scene.js
+    //Stage1Scene.js
     const FRAME_COUNT = 69;
 
     for (let i = 0; i < FRAME_COUNT; i++) {
@@ -183,18 +183,6 @@ class Stage1Scene extends Phaser.Scene {
       const cx = cam.midPoint.x;
       const cy = cam.midPoint.y;
 
-      // ✅ 인트로 동안 입력 잠금
-    // this.input.enabled = false;
-
-    // // ✅ WebM 인트로 재생 (끝나면 입력 풀고 진행)
-    // this.playIntroWebM(() => {
-    //   this.input.enabled = true;
-    // });
-
-    // // ✅ 씬이 종료/전환되면 비디오 DOM 제거
-    // this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.removeIntroWebM());
-    // this.events.once(Phaser.Scenes.Events.DESTROY, () => this.removeIntroWebM());
-
 
 
 
@@ -250,15 +238,14 @@ class Stage1Scene extends Phaser.Scene {
       intro.once('animationcomplete', () => {
         intro.destroy();
 
-        // ✅ 필요하면 여기서 메모리 정리(다시 안 쓸 때만)
         this.anims.remove('introOnce');
-        for (let i = 1; i <= FRAME_COUNT; i++) {
-          this.textures.remove(`intro_${String(i).padStart(2, '0')}`);
-        }
 
-        // ✅ 입력 풀기
-        // this.input.enabled = true;
+        // ✅ 로드한 키랑 똑같이 지우기: intro_0 ~ intro_68
+        for (let i = 0; i < FRAME_COUNT; i++) {
+          this.textures.remove(`intro_${i}`);
+        }
       });
+
     });
 
 

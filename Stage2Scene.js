@@ -10,59 +10,59 @@ class Stage2Scene extends Phaser.Scene {
     this.load.image('1bg', 'images/S2/1bg.png');
     this.load.image('board',   'image/basic/dag.png'); 
 
-    // 재료 아이콘
-    // 첫번째
-    this.load.image('cat', 'images/S2/neko.png');
-    this.load.image('dog', 'images/S2/dog.png');
-    this.load.image('duck', 'images/S2/duck.png');
-    this.load.image('bunny', 'images/S2/bunny.png');
-    this.load.image('yel', 'images/S2/yel.png');
-    this.load.image('1pink', 'images/S2/1pink.png');
-    this.load.image('1blue', 'images/S2/1blue.png');
-    this.load.image('1orange', 'images/S2/1orange.png');
-    this.load.image('animal', 'images/S2/animal.png');
-    // 두번째
-    this.load.image('lemon', 'images/S2/lemon.png');
-    this.load.image('berry', 'images/S2/berry.png');
-    this.load.image('coffee', 'images/S2/coffee.png');
-    this.load.image('catfood', 'images/S2/catfood.png');
-    this.load.image('choco', 'images/S2/choco.png');
-    this.load.image('2pink', 'images/S2/2pink.png');
-    this.load.image('2blue', 'images/S2/2blue.png');
-    this.load.image('2orange', 'images/S2/2orange.png');
-    this.load.image('cafe', 'images/S2/cafe.png');
-    this.load.image('2bg', 'images/S2/2bg.png');
-    // 세번째
-    this.load.image('flower', 'images/S2/flower.png');
-    this.load.image('greflo', 'images/S2/greflo.png');
-    this.load.image('yelrose', 'images/S2/yelrose.png');
-    this.load.image('redrose', 'images/S2/redrose.png');
-    this.load.image('whirose', 'images/S2/whirose.png');
-    this.load.image('3yel', 'images/S2/3yel.png');
-    this.load.image('3red', 'images/S2/3red.png');
-    this.load.image('3gre', 'images/S2/3gre.png');
-    this.load.image('3whi', 'images/S2/3whi.png');
-    this.load.image('3bg', 'images/S2/3bg.png');
-    // 네번째
-    this.load.image('lab', 'images/S2/lab.png');
-    this.load.image('nekobeard', 'images/S2/nekobeard.png');
-    this.load.image('idcard', 'images/S2/idcard.png');
-    this.load.image('texts', 'images/S2/texts.png');
-    this.load.image('4rain', 'images/S2/4rain.png');
-    this.load.image('4bg', 'images/S2/4bg.png');
-    //다섯번째
-    this.load.image('foods', 'images/S2/foods.png');
-    this.load.image('egg', 'images/S2/egg.png');
-    this.load.image('mandoo', 'images/S2/mandoo.png');
-    this.load.image('chicken', 'images/S2/chicken.png');
-    this.load.image('catleaf', 'images/S2/catleaf.png');
-    this.load.image('5rain', 'images/S2/5rain.png');
-    this.load.image('5bg', 'images/S2/5bg.png');
-    //마지막 단계 + 재료창
-    this.load.image('fire', 'images/S2/6fire.png');
-    this.load.image('lighter', 'images/S2/6lighter.png');
-    this.load.image('firelighter', 'images/S2/6firelighter.png');
-    this.load.image('comment', 'images/S2/6comment.png');
+    // // 재료 아이콘
+    // // 첫번째
+    // this.load.image('cat', 'images/S2/neko.png');
+    // this.load.image('dog', 'images/S2/dog.png');
+    // this.load.image('duck', 'images/S2/duck.png');
+    // this.load.image('bunny', 'images/S2/bunny.png');
+    // this.load.image('yel', 'images/S2/yel.png');
+    // this.load.image('1pink', 'images/S2/1pink.png');
+    // this.load.image('1blue', 'images/S2/1blue.png');
+    // this.load.image('1orange', 'images/S2/1orange.png');
+    // this.load.image('animal', 'images/S2/animal.png');
+    // // 두번째
+    // this.load.image('lemon', 'images/S2/lemon.png');
+    // this.load.image('berry', 'images/S2/berry.png');
+    // this.load.image('coffee', 'images/S2/coffee.png');
+    // this.load.image('catfood', 'images/S2/catfood.png');
+    // this.load.image('choco', 'images/S2/choco.png');
+    // this.load.image('2pink', 'images/S2/2pink.png');
+    // this.load.image('2blue', 'images/S2/2blue.png');
+    // this.load.image('2orange', 'images/S2/2orange.png');
+    // this.load.image('cafe', 'images/S2/cafe.png');
+    // this.load.image('2bg', 'images/S2/2bg.png');
+    // // 세번째
+    // this.load.image('flower', 'images/S2/flower.png');
+    // this.load.image('greflo', 'images/S2/greflo.png');
+    // this.load.image('yelrose', 'images/S2/yelrose.png');
+    // this.load.image('redrose', 'images/S2/redrose.png');
+    // this.load.image('whirose', 'images/S2/whirose.png');
+    // this.load.image('3yel', 'images/S2/3yel.png');
+    // this.load.image('3red', 'images/S2/3red.png');
+    // this.load.image('3gre', 'images/S2/3gre.png');
+    // this.load.image('3whi', 'images/S2/3whi.png');
+    // this.load.image('3bg', 'images/S2/3bg.png');
+    // // 네번째
+    // this.load.image('lab', 'images/S2/lab.png');
+    // this.load.image('nekobeard', 'images/S2/nekobeard.png');
+    // this.load.image('idcard', 'images/S2/idcard.png');
+    // this.load.image('texts', 'images/S2/texts.png');
+    // this.load.image('4rain', 'images/S2/4rain.png');
+    // this.load.image('4bg', 'images/S2/4bg.png');
+    // //다섯번째
+    // this.load.image('foods', 'images/S2/foods.png');
+    // this.load.image('egg', 'images/S2/egg.png');
+    // this.load.image('mandoo', 'images/S2/mandoo.png');
+    // this.load.image('chicken', 'images/S2/chicken.png');
+    // this.load.image('catleaf', 'images/S2/catleaf.png');
+    // this.load.image('5rain', 'images/S2/5rain.png');
+    // this.load.image('5bg', 'images/S2/5bg.png');
+    // //마지막 단계 + 재료창
+    // this.load.image('fire', 'images/S2/6fire.png');
+    // this.load.image('lighter', 'images/S2/6lighter.png');
+    // this.load.image('firelighter', 'images/S2/6firelighter.png');
+    // this.load.image('comment', 'images/S2/6comment.png');
     this.load.image('box', 'images/S2/box.png'); //재료창
   }
 
@@ -193,6 +193,117 @@ class Stage2Scene extends Phaser.Scene {
         }
 ];
 
+    // ✅ key -> url 매핑 (Stage2에서 쓰는 것만)
+    const ASSET_URL = {
+      // 1
+      cat: 'images/S2/neko.png',
+      dog: 'images/S2/dog.png',
+      duck: 'images/S2/duck.png',
+      bunny: 'images/S2/bunny.png',
+      yel: 'images/S2/yel.png',
+      '1pink': 'images/S2/1pink.png',
+      '1blue': 'images/S2/1blue.png',
+      '1orange': 'images/S2/1orange.png',
+      animal: 'images/S2/animal.png',
+      '1bg': 'images/S2/1bg.png',
+
+      // 2
+      lemon: 'images/S2/lemon.png',
+      berry: 'images/S2/berry.png',
+      coffee: 'images/S2/coffee.png',
+      catfood: 'images/S2/catfood.png',
+      choco: 'images/S2/choco.png',
+      '2pink': 'images/S2/2pink.png',
+      '2blue': 'images/S2/2blue.png',
+      '2orange': 'images/S2/2orange.png',
+      cafe: 'images/S2/cafe.png',
+      '2bg': 'images/S2/2bg.png',
+
+      // 3
+      flower: 'images/S2/flower.png',
+      greflo: 'images/S2/greflo.png',
+      yelrose: 'images/S2/yelrose.png',
+      redrose: 'images/S2/redrose.png',
+      whirose: 'images/S2/whirose.png',
+      '3yel': 'images/S2/3yel.png',
+      '3red': 'images/S2/3red.png',
+      '3gre': 'images/S2/3gre.png',
+      '3whi': 'images/S2/3whi.png',
+      '3bg': 'images/S2/3bg.png',
+
+      // 4
+      lab: 'images/S2/lab.png',
+      nekobeard: 'images/S2/nekobeard.png',
+      idcard: 'images/S2/idcard.png',
+      texts: 'images/S2/texts.png',
+      '4rain': 'images/S2/4rain.png',
+      '4bg': 'images/S2/4bg.png',
+
+      // 5
+      foods: 'images/S2/foods.png',
+      egg: 'images/S2/egg.png',
+      mandoo: 'images/S2/mandoo.png',
+      chicken: 'images/S2/chicken.png',
+      catleaf: 'images/S2/catleaf.png',
+      '5rain': 'images/S2/5rain.png',
+      '5bg': 'images/S2/5bg.png',
+
+      // 6
+      fire: 'images/S2/6fire.png',
+      lighter: 'images/S2/6lighter.png',
+      firelighter: 'images/S2/6firelighter.png',
+      comment: 'images/S2/6comment.png',
+    };
+
+    // ✅ plate에서 필요한 key만 뽑기
+    const keysForPlate = (cfg) => {
+      const set = new Set();
+
+      // 트레이 피스(아이콘)
+      (cfg.trayPieces ?? []).forEach(k => set.add(k));
+
+      // desc
+      if (cfg.descKey) set.add(cfg.descKey);
+
+      // overlayMap 결과 텍스처들
+      if (cfg.overlayMap) Object.values(cfg.overlayMap).forEach(k => set.add(k));
+
+      // 6번째용 texture map들
+      if (cfg.trayTextureMap) Object.values(cfg.trayTextureMap).forEach(k => set.add(k));
+      if (cfg.dragTextureMap) Object.values(cfg.dragTextureMap).forEach(k => set.add(k));
+
+      // 배경(plate별 bgKey를 쓰고 싶으면 cfg에 넣어서 add)
+      // 예: cfg.bgKey = '2bg' 이런 식으로 넣으면 여기서 set.add(cfg.bgKey)
+
+      return Array.from(set);
+    };
+
+    // ✅ 필요한 것만 로드
+    const loadKeysIfNeeded = (keys, done) => {
+      let need = false;
+
+      keys.forEach((key) => {
+        if (this.textures.exists(key)) return;
+        const url = ASSET_URL[key];
+        if (!url) return; // 매핑 없는 키는 그냥 패스(디버그용)
+        this.load.image(key, url);
+        need = true;
+      });
+
+      if (!need) return done();
+
+      this.load.once('complete', done);
+      this.load.start();
+    };
+
+    // ✅ 안 쓰는 텍스처 제거
+    const unloadKeys = (keys) => {
+      keys.forEach((key) => {
+        if (this.textures.exists(key)) this.textures.remove(key);
+      });
+    };
+
+
     // 판정영역
     const plateRects = plateConfigs.map((cfg, i) => {
       const { x, y } = cfg.center;
@@ -273,6 +384,18 @@ class Stage2Scene extends Phaser.Scene {
     // 오버레이 작업
     let isTransitioning = false;
     const plateOverlays = new Array(plateConfigs.length).fill(null);
+
+
+    const getAliveOverlayKeys = () => {
+    const set = new Set();
+    for (const img of plateOverlays) {
+      if (!img) continue;
+      const k = img.texture?.key;
+      if (k) set.add(k);
+    }
+    return set;
+  };
+
 
     // 물약색 변경
     const applyOverlay = (plateIndex, pieceKey) => {
@@ -469,41 +592,102 @@ class Stage2Scene extends Phaser.Scene {
     };
 
     // 카메라 이동
-    const focusCameraOnPlate = (index, instant = false) => {
-      const c = plateConfigs[index].center;
+    let loadedPlateKeys = null; // ✅ 현재 plate에서 로드한 키들 기록
 
-      const targetScrollX = Phaser.Math.Clamp(
-        c.x - gameWidth / 2,
-        cam._bounds.x,
-        cam._bounds.right - gameWidth
-      );
-      const targetScrollY = Phaser.Math.Clamp(
-        c.y - gameHeight / 2,
-        cam._bounds.y,
-        cam._bounds.bottom - gameHeight
-      );
+const focusCameraOnPlate = (index, instant = false) => {
+  const nextCfg = plateConfigs[index];
+  const nextKeys = keysForPlate(nextCfg);
 
-      console.log('🎥 focusCameraOnPlate', { index, targetScrollX, targetScrollY, instant });
+  // ✅ 1) 다음 plate 필요한 리소스 먼저 로드
+  loadKeysIfNeeded(nextKeys, () => {
+    // ✅ 2) 카메라 이동(기존 로직 유지)
+    const c = nextCfg.center;
 
-      if (instant) {
-        cam.scrollX = targetScrollX;
-        cam.scrollY = targetScrollY;
-        currentPlateIndex = index;
-        updateTrayForPlate(index);
-      } else {
-        scene.tweens.add({
-          targets: cam,
-          scrollX: targetScrollX,
-          scrollY: targetScrollY,
-          duration: 600,
-          ease: 'Cubic.easeInOut',
-          onComplete: () => {
-            currentPlateIndex = index;
-            updateTrayForPlate(index);
-          },
-        });
-      }
-    };
+    const targetScrollX = Phaser.Math.Clamp(
+      c.x - gameWidth / 2,
+      cam._bounds.x,
+      cam._bounds.right - gameWidth
+    );
+    const targetScrollY = Phaser.Math.Clamp(
+      c.y - gameHeight / 2,
+      cam._bounds.y,
+      cam._bounds.bottom - gameHeight
+    );
+
+const finish = () => {
+  const prevKeys = loadedPlateKeys;   // ✅ 이전 plate keys 백업
+
+  // ✅ 현재 plate 갱신 먼저 (여기서 trayIcons destroy 됨)
+  loadedPlateKeys = nextKeys;
+  currentPlateIndex = index;
+  updateTrayForPlate(index);
+
+  // ✅ 이제 언로드 (레이어드/공통은 보호)
+  if (prevKeys) {
+    const keep = new Set(['bgcolor','board','box','1bg']);
+
+    // ✅ 살아있는 레이어드(오버레이)가 쓰는 텍스처는 절대 지우지 말기
+    const aliveOverlays = getAliveOverlayKeys();
+    aliveOverlays.forEach(k => keep.add(k));
+
+    const toRemove = prevKeys.filter(k => !keep.has(k));
+    unloadKeys(toRemove);
+  }
+};
+
+
+    if (instant) {
+      cam.scrollX = targetScrollX;
+      cam.scrollY = targetScrollY;
+      finish();
+    } else {
+      scene.tweens.add({
+        targets: cam,
+        scrollX: targetScrollX,
+        scrollY: targetScrollY,
+        duration: 600,
+        ease: 'Cubic.easeInOut',
+        onComplete: finish,
+      });
+    }
+  });
+};
+
+    // const focusCameraOnPlate = (index, instant = false) => {
+    //   const c = plateConfigs[index].center;
+
+    //   const targetScrollX = Phaser.Math.Clamp(
+    //     c.x - gameWidth / 2,
+    //     cam._bounds.x,
+    //     cam._bounds.right - gameWidth
+    //   );
+    //   const targetScrollY = Phaser.Math.Clamp(
+    //     c.y - gameHeight / 2,
+    //     cam._bounds.y,
+    //     cam._bounds.bottom - gameHeight
+    //   );
+
+    //   console.log('🎥 focusCameraOnPlate', { index, targetScrollX, targetScrollY, instant });
+
+    //   if (instant) {
+    //     cam.scrollX = targetScrollX;
+    //     cam.scrollY = targetScrollY;
+    //     currentPlateIndex = index;
+    //     updateTrayForPlate(index);
+    //   } else {
+    //     scene.tweens.add({
+    //       targets: cam,
+    //       scrollX: targetScrollX,
+    //       scrollY: targetScrollY,
+    //       duration: 600,
+    //       ease: 'Cubic.easeInOut',
+    //       onComplete: () => {
+    //         currentPlateIndex = index;
+    //         updateTrayForPlate(index);
+    //       },
+    //     });
+    //   }
+    // };
 
     // 시작
     focusCameraOnPlate(0, true);
