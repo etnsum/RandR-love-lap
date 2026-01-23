@@ -6,164 +6,430 @@ class Stage2Scene extends Phaser.Scene {
   }
 
   preload() {
-    // 2단계 배경 (2944 x 1656)
-    this.load.image('stage2bg', 'images/plates.jpg'); // 파일명 맞게 수정
+    this.load.image('bgcolor', 'images/S2/bgcolor.png');
+    this.load.image('1bg', 'images/S2/1bg.png');
+    this.load.image('board',   'image/basic/dag.png'); 
 
     // 재료 아이콘
-    this.load.image('p1', 'images/p1.png'); // 재료1
-    this.load.image('p2', 'images/p2.png'); // 재료2
-    this.load.image('p3', 'images/p3.png'); // 재료3
-    this.load.image('p4', 'images/p4.png'); // 재료1
-    this.load.image('p5', 'images/p5.png'); // 재료2
-    this.load.image('p6', 'images/p6.png'); // 재료3
-    this.load.image('p7', 'images/p7.png'); // 재료1
-    this.load.image('p8', 'images/p8.png'); // 재료2
+    // 첫번째
+    this.load.image('cat', 'images/S2/neko.png');
+    this.load.image('dog', 'images/S2/dog.png');
+    this.load.image('duck', 'images/S2/duck.png');
+    this.load.image('bunny', 'images/S2/bunny.png');
+    this.load.image('yel', 'images/S2/yel.png');
+    this.load.image('1pink', 'images/S2/1pink.png');
+    this.load.image('1blue', 'images/S2/1blue.png');
+    this.load.image('1orange', 'images/S2/1orange.png');
+    this.load.image('animal', 'images/S2/animal.png');
+    // 두번째
+    this.load.image('lemon', 'images/S2/lemon.png');
+    this.load.image('berry', 'images/S2/berry.png');
+    this.load.image('coffee', 'images/S2/coffee.png');
+    this.load.image('catfood', 'images/S2/catfood.png');
+    this.load.image('choco', 'images/S2/choco.png');
+    this.load.image('2pink', 'images/S2/2pink.png');
+    this.load.image('2blue', 'images/S2/2blue.png');
+    this.load.image('2orange', 'images/S2/2orange.png');
+    this.load.image('cafe', 'images/S2/cafe.png');
+    this.load.image('2bg', 'images/S2/2bg.png');
+    // 세번째
+    this.load.image('flower', 'images/S2/flower.png');
+    this.load.image('greflo', 'images/S2/greflo.png');
+    this.load.image('yelrose', 'images/S2/yelrose.png');
+    this.load.image('redrose', 'images/S2/redrose.png');
+    this.load.image('whirose', 'images/S2/whirose.png');
+    this.load.image('3yel', 'images/S2/3yel.png');
+    this.load.image('3red', 'images/S2/3red.png');
+    this.load.image('3gre', 'images/S2/3gre.png');
+    this.load.image('3whi', 'images/S2/3whi.png');
+    this.load.image('3bg', 'images/S2/3bg.png');
+    // 네번째
+    this.load.image('lab', 'images/S2/lab.png');
+    this.load.image('nekobeard', 'images/S2/nekobeard.png');
+    this.load.image('idcard', 'images/S2/idcard.png');
+    this.load.image('texts', 'images/S2/texts.png');
+    this.load.image('4rain', 'images/S2/4rain.png');
+    this.load.image('4bg', 'images/S2/4bg.png');
+    //다섯번째
+    this.load.image('foods', 'images/S2/foods.png');
+    this.load.image('egg', 'images/S2/egg.png');
+    this.load.image('mandoo', 'images/S2/mandoo.png');
+    this.load.image('chicken', 'images/S2/chicken.png');
+    this.load.image('catleaf', 'images/S2/catleaf.png');
+    this.load.image('5rain', 'images/S2/5rain.png');
+    this.load.image('5bg', 'images/S2/5bg.png');
+    //마지막 단계 + 재료창
+    this.load.image('fire', 'images/S2/6fire.png');
+    this.load.image('lighter', 'images/S2/6lighter.png');
+    this.load.image('firelighter', 'images/S2/6firelighter.png');
+    this.load.image('comment', 'images/S2/6comment.png');
+    this.load.image('box', 'images/S2/box.png'); //재료창
   }
 
   create() {
     const scene = this;
-    const gameWidth = this.scale.width;    // 예: 800
-    const gameHeight = this.scale.height;  // 예: 872
+    const gameWidth = this.scale.width;
+    const gameHeight = this.scale.height;
 
-    // -------------------------------------------------
-    // 1) 배경 & 카메라 (월드 = 배경 크기)
-    // -------------------------------------------------
-    const bg = this.add.image(0, 0, 'stage2bg').setOrigin(0, 0);
-    const WORLD_WIDTH = bg.width;   // 2944
-    const WORLD_HEIGHT = bg.height; // 1656
+    // depth
+    const DEPTH_BG = 0;
+    const DEPTH_WORLD = 10;
+    const DEPTH_UI = 500;
+    const DEPTH_UI_ICON = DEPTH_UI + 5;
+    const DEPTH_DRAG = 9999;
+    const DEPTH_BOARD    = 999;
+
+    // 월드 크기
+    const bg = this.add.image(0, 0, 'bgcolor')
+      .setOrigin(0, 0)
+      .setDepth(DEPTH_BG);
+
+    scene.add.image(728.7, 1398, 'board')
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0)
+      .setDepth(DEPTH_BOARD);
+
+      
+    // 플라스크
+    const plateBg1 = this.add.image(
+      bg.width / 2,
+      bg.height / 2,
+      '1bg'
+    )
+      .setOrigin(0.5, 0.5);
+    const WORLD_WIDTH = bg.width;
+    const WORLD_HEIGHT = bg.height;
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-    // 🔹 플레이트별 설정
-    // center: 카메라가 맞출 중앙 좌표
-    // trayPieces: "이 플레이트에서 트레이에 보여줄 재료 목록"
+    // 재료 설정
     const plateConfigs = [
       {
-        center: { x: 864,  y: 687 },   // 플레이트1
-        trayPieces: ['p1', 'p2', 'p3'],      // 예: p1, p2 노출
+        center: { x: 1120, y: 1950.185 },
+        trayPieces: ['duck', 'cat', 'dog',  'bunny'],
+        descKey: 'animal',    
+        overlayMode: 'local',
+        overlayMap: {
+        duck: 'yel',
+        bunny: '1pink',
+        cat: '1blue',
+        dog: '1orange',
       },
-      {
-        center: { x: 861,  y: 1312 },  // 플레이트2
-        trayPieces: ['p3', 'p4', 'p5'],            // 예: p3 하나만
-      },
-      {
-        center: { x: 1432, y: 729 },   // 플레이트3
-        trayPieces: ['p6', 'p7', 'p8'],            // 예: p1만
-      },
-      {
-        center: { x: 1714, y: 1322 },  // 플레이트4
-        trayPieces: ['p1', 'p4', 'p7'],      // 예: p2, p3
-      },
-      {
-        center: { x: 2153, y: 940 },   // 플레이트5
-        trayPieces: ['p2', 'p6', 'p3'],      // 예: p1, p3
-      },
-    ];
 
-    // 드롭 판정 박스 (각 center 주변으로 넉넉하게)
+      // 물약 좌표
+        overlayPos: { x: 1117, y: 1871.185 }, //
+      },
+      {
+        center: { x: 1120, y: 3500.5298 },
+        trayPieces: ['coffee', 'lemon', 'berry', 'catfood'],
+        descKey: 'cafe',
+        overlayMode: 'local',
+        overlayMap: {
+        coffee: 'choco',
+        lemon: '2blue',
+        berry: '2pink',
+        catfood: '2orange',
+      },
+
+      // 물약 좌표
+        overlayPos: { x: 1130, y: 3160.5298 }, // 625.9709 x 1415.2414
+      },
+      {
+        center: { x: 2170.3562, y: 1800.5298 },
+        trayPieces: ['whirose', 'yelrose', 'redrose', 'greflo'],
+        descKey: 'flower',
+        overlayMode: 'full',   
+        overlayMap: {
+        whirose: '3whi',
+        yelrose: '3yel',
+        redrose: '3red',
+        greflo: '3gre',
+      },
+      },
+      {
+        center: { x: 3500.3562, y: 3500.5298 },
+        trayPieces: ['idcard', 'texts', 'nekobeard'],
+        trayLayout: { paddingX: 240, yOffset: -10 },
+        descKey: 'lab',
+        overlayMode: 'full',   
+        overlayMap: {
+        idcard: '4rain',
+        texts: '4rain',
+        nekobeard: '4rain',
+      },
+
+      },
+      {
+        center: { x: 4470, y: 2500.101 },
+        trayPieces: ['egg', 'mandoo', 'chicken', 'catleaf'],
+        trayLayout: { paddingX: 195, yOffset: -10 },
+        descKey: 'foods',
+        overlayMode: 'full',   
+        overlayMap: {
+        egg: '5rain',
+        mandoo: '5rain',
+        chicken: '5rain',
+        catleaf: '5rain',
+      },
+      },
+        {
+          center: { x: 4470, y: 2500.101 },
+          trayPieces: ['lighter', 'comment'],
+          trayLayout: { paddingX: 380, yOffset: 40 },
+          trayTextureMap: {
+            lighter: 'lighter',  // 불 꺼진 토치
+            comment: 'comment',      
+          },
+          dragTextureMap: {
+            lighter: 'firelighter',   // 불 켜진 토치
+          },
+
+          nonInteractive: ['comment'],
+          overlayMap: {
+          lighter: 'fire',
+        },
+        overlayPos: { x: 4460, y: 2660.101 }, //658.6771 ㅌ 1270.1752
+        }
+];
+
+    // 판정영역
     const plateRects = plateConfigs.map((cfg, i) => {
       const { x, y } = cfg.center;
-      const rect = {
-        x1: x - 250,
-        x2: x + 250,
-        y1: y - 300,
-        y2: y + 300,
-      };
+      const rect = { x1: x - 300, x2: x + 300, y1: y - 900, y2: y + 300 };
       console.log('📦 plateRect', i, rect);
       return rect;
     });
 
-    let currentPlateIndex = 0; // 0~4
+    let currentPlateIndex = 0;
 
-    // -------------------------------------------------
-    // 2) 오른쪽 트레이 공통 영역 (UI)
-    // -------------------------------------------------
-    const trayWidth = 180;
-    const trayX = gameWidth - trayWidth / 2 - 20;
+    // 디버그
+    // const debugRects = [];
+    // const rectGfx = scene.add.graphics()
+    //   .setDepth(DEPTH_WORLD + 999)   // 1bg 위에 보이게
+    //   .setScrollFactor(1);           // 월드 기준 (카메라 따라 움직임)
 
-    this.add
-      .rectangle(trayX, gameHeight / 2, trayWidth, 600, 0x000000, 0.35)
-      .setScrollFactor(0);
+    // rectGfx.lineStyle(4, 0x00ff00, 1); // 두께, 색, 알파
 
-    // 실제로 표시되는 아이콘들을 담아둘 배열
+    // plateRects.forEach((r, i) => {
+    //   rectGfx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
+    // });
+
+    // 트레이
+    const DESIGN_TRAY_X = 638.452;
+    const DESIGN_TRAY_Y = 2079.4179;
+
+    const trayImg = this.add.image(DESIGN_TRAY_X, DESIGN_TRAY_Y, 'box')
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(DEPTH_UI);
+
+    // 실제 아이콘들 배열
     const trayIcons = [];
 
-    // -------------------------------------------------
-    // 3) 엔딩 카운트 & 공통 유틸
-    // -------------------------------------------------
-    const added = { p1: false, p2: false, p3: false };
+    const getTraySlots = (count, layout = {}) => {
+      const b = trayImg.getBounds();
+
+      const paddingX = layout.paddingX ?? 210;
+      const yOffset  = layout.yOffset  ?? -10;
+
+      const y = trayImg.y + yOffset;
+      const left = b.left + paddingX;
+      const right = b.right - paddingX;
+
+      return Array.from({ length: count }, (_, i) => {
+        const t = count === 1 ? 0.5 : i / (count - 1);
+        return { x: left + (right - left) * t, y };
+      });
+    };
+
+
+    // 설명 이미지
+    const getDescPos = () => {
+      const b = trayImg.getBounds();
+      const paddingBottom = 110;     // 박스 아래 패딩
+      return {
+        x: trayImg.x,
+        y: b.bottom - paddingBottom
+      };
+    };
+
+
+
+    // 엔딩/판정 로직(수정해야됨)
+    const added = {}; // pieceKey별로 true 기록 (원하면 p1/p2 이런식으로 바꿔도 됨)
 
     const isInsidePlateRect = (x, y, rect) =>
       x >= rect.x1 && x <= rect.x2 && y >= rect.y1 && y <= rect.y2;
 
     const handleEnding = () => {
       console.log('🎬 handleEnding', added);
-
-      // 네가 원래 말한 조건 그대로 유지
-      // p1만 true → A 엔딩, p1+p2 → B 엔딩
-      if (added.p1 && !added.p2) {
-        this.scene.start('EndingA');
-      } else if (added.p1 && added.p2) {
-        this.scene.start('EndingB');
-      } else {
-        this.scene.start('EndingA');
-      }
+      // TODO: 네 엔딩 로직으로 교체
+      this.scene.start('EndingA');
     };
+
+
+
+    // 오버레이 작업
+    let isTransitioning = false;
+    const plateOverlays = new Array(plateConfigs.length).fill(null);
+
+    // 물약색 변경
+    const applyOverlay = (plateIndex, pieceKey) => {
+      const cfg = plateConfigs[plateIndex];
+      const overlayKey = cfg.overlayMap?.[pieceKey];
+      if (!overlayKey) return;
+
+      if (plateOverlays[plateIndex]) {
+        plateOverlays[plateIndex].destroy();
+        plateOverlays[plateIndex] = null;
+      }
+
+      // 위치
+      const isFull = cfg.overlayMode === 'full';
+      const x = isFull ? plateBg1.x : cfg.overlayPos.x;
+      const y = isFull ? plateBg1.y : cfg.overlayPos.y;
+
+      const img = scene.add.image(x, y, overlayKey)
+        .setOrigin(0.5)
+        .setScrollFactor(1)
+        .setDepth(DEPTH_WORLD + 5);
+
+      if (isFull) {
+        img.setScale(plateBg1.scaleX, plateBg1.scaleY);
+      }
+
+      // 페이드
+      img.setAlpha(0);
+      scene.tweens.add({
+        targets: img,
+        alpha: 1,
+        duration: 250,
+        ease: 'Sine.Out',
+      });
+
+      // 불꽃 애니메이션 효과
+    if (overlayKey === 'fire') {
+      img.setOrigin(0.5, 0.5);
+
+      let baseY = img.scaleY;
+      const amp = 0.50;            // 펄럭 폭
+      const growRate = 1.2;       // 성장 속도
+      const maxY = baseY * 2.0;    // 최대 크기
+
+      const flapTween = scene.tweens.add({
+        targets: img,
+        scaleY: baseY * (1 + amp),
+        duration: 220,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.InOut',
+      });
+
+      const growEvent = scene.time.addEvent({
+        delay: 250,
+        loop: true,
+        callback: () => {
+          baseY = Math.min(baseY * growRate, maxY);
+
+          img.scaleY = baseY;
+
+          flapTween.updateTo('scaleY', baseY * (1 + amp), true);
+
+          if (baseY >= maxY) {
+            growEvent.remove(false);  
+          }
+        },
+      });
+    }
+
+      plateOverlays[plateIndex] = img;
+    };
+
 
     const onPlateFilled = (pieceKey) => {
-      console.log('⭐ onPlateFilled', { pieceKey, currentPlateIndex });
+      if (isTransitioning) return;
+
       added[pieceKey] = true;
+      applyOverlay(currentPlateIndex, pieceKey);
 
-      // 마지막 플레이트면 엔딩으로
-      if (currentPlateIndex === plateConfigs.length - 1) {
-        console.log('🎬 last plate → ending');
-        handleEnding();
-        return;
-      }
+      isTransitioning = true;
 
-      console.log('➡ move to plate', currentPlateIndex + 1);
-      focusCameraOnPlate(currentPlateIndex + 1);
+      const EFFECT_DELAY = 350;
+      const ENDING_DELAY = 1200;
+      const CAMERA_DELAY = 600;
+
+      scene.time.delayedCall(EFFECT_DELAY, () => {
+        isTransitioning = false;
+
+        const isLast = currentPlateIndex === plateConfigs.length - 1;
+
+        if (isLast) {
+          scene.time.delayedCall(ENDING_DELAY, () => {
+            handleEnding();   
+          });
+          return;
+        }
+
+        scene.time.delayedCall(CAMERA_DELAY, () => {
+          focusCameraOnPlate(currentPlateIndex + 1);
+        });
+      });
+
     };
 
-    // -------------------------------------------------
-    // 4) 플레이트마다 트레이 아이콘 재구성
-    // -------------------------------------------------
+
+    // 트레이 아이콘 갱신
     const updateTrayForPlate = (plateIndex) => {
       const cfg = plateConfigs[plateIndex];
-      const pieceKeys = cfg.trayPieces; // ex) ['p1', 'p2']
+      const pieceKeys = cfg.trayPieces;
 
       console.log('🧪 updateTrayForPlate', plateIndex, pieceKeys);
 
-      // 기존 아이콘 지우기
       trayIcons.forEach((icon) => icon.destroy());
       trayIcons.length = 0;
 
-      // 세로로 나열할 y좌표 기본값
-      const baseY = 260;
-      const gapY = 180;
+      const slots = getTraySlots(pieceKeys.length, cfg.trayLayout);
+
+      // 6번째 플레이트
+      const nonInteractive = cfg.nonInteractive ?? ['comment'];
+
+      const trayTextureMap = cfg.trayTextureMap ?? {
+        lighter: 'lighter', // 불 꺼진 토치
+      };
+
+      const dragTextureMap = cfg.dragTextureMap ?? {
+        lighter: 'firelighter',  // 불 켜진 토치
+      };
 
       pieceKeys.forEach((pieceKey, idx) => {
-        const iconY = baseY + idx * gapY;
+        const slot = slots[idx];
 
-        const ICON_SCALE = 0.35;  // 너가 원하는 크기로 조절
+        // 트레이에 표시될 키
+        const trayKey = trayTextureMap[pieceKey] ?? pieceKey;
 
-        const icon = scene.add
-          .image(trayX, iconY, pieceKey)
+        const icon = scene.add.image(slot.x, slot.y, trayKey)
           .setScrollFactor(0)
-          .setScale(ICON_SCALE)
-          .setInteractive();
+          .setDepth(DEPTH_UI_ICON);
 
-        icon.pieceKey = pieceKey;
         trayIcons.push(icon);
 
-        // 여기서부터 드래그 clone 로직
+        // 코멘트 락
+        if (nonInteractive.includes(pieceKey)) {
+          icon.disableInteractive?.();
+          return;
+        }
+
+        // 나머지는 클릭 가능
+        icon.setInteractive({ useHandCursor: true });
+
         icon.on('pointerdown', (pointer) => {
-          // 월드 좌표 기준 clone 생성
-          const clone = scene.add
-            .image(pointer.worldX, pointer.worldY, pieceKey)
-            .setScale(ICON_SCALE)
-            .setInteractive();
+          const dragKey = dragTextureMap[pieceKey] ?? trayKey;
+
+          const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
+            .setDepth(DEPTH_DRAG)
+            .setScrollFactor(1)
+            .setInteractive({ useHandCursor: true });
 
           scene.input.setDraggable(clone);
 
@@ -185,42 +451,39 @@ class Stage2Scene extends Phaser.Scene {
               inside,
             });
 
-            if (inside) {
-              console.log('✅ plate hit!');
-              clone.destroy();
-              onPlateFilled(pieceKey);
-            } else {
-              console.log('❌ plate miss, destroy');
-              clone.destroy();
-            }
+            clone.destroy();
+            if (inside) onPlateFilled(pieceKey);
           });
         });
       });
+
+      if (cfg.descKey) {
+        const { x, y } = getDescPos();
+
+        const desc = scene.add.image(x, y, cfg.descKey)
+          .setScrollFactor(0)
+          .setDepth(DEPTH_UI_ICON);
+
+        trayIcons.push(desc);
+      }
     };
 
-    // -------------------------------------------------
-    // 5) 카메라 이동 (X+Y) + 플레이트 변경 시 트레이 갱신
-    // -------------------------------------------------
+    // 카메라 이동
     const focusCameraOnPlate = (index, instant = false) => {
       const c = plateConfigs[index].center;
 
       const targetScrollX = Phaser.Math.Clamp(
         c.x - gameWidth / 2,
-        0,
-        WORLD_WIDTH - gameWidth
+        cam._bounds.x,
+        cam._bounds.right - gameWidth
       );
       const targetScrollY = Phaser.Math.Clamp(
         c.y - gameHeight / 2,
-        0,
-        WORLD_HEIGHT - gameHeight
+        cam._bounds.y,
+        cam._bounds.bottom - gameHeight
       );
 
-      console.log('🎥 focusCameraOnPlate', {
-        index,
-        targetScrollX,
-        targetScrollY,
-        instant,
-      });
+      console.log('🎥 focusCameraOnPlate', { index, targetScrollX, targetScrollY, instant });
 
       if (instant) {
         cam.scrollX = targetScrollX;
@@ -242,26 +505,8 @@ class Stage2Scene extends Phaser.Scene {
       }
     };
 
-    // 시작: 플레이트1 + 그에 맞는 트레이 구성
+    // 시작
     focusCameraOnPlate(0, true);
 
-    // -------------------------------------------------
-    // 6) 안내 텍스트 & (선택) 디버그
-    // -------------------------------------------------
-    this.add
-      .text(30, 30, '2단계: 플레이트마다 다른 재료를 사용해봐!', {
-        fontSize: '24px',
-        color: '#ffffff',
-      })
-      .setScrollFactor(0);
-
-    // 플레이트 영역 디버그용 (필요하면 주석 해제)
-    /*
-    const debug = this.add.graphics();
-    debug.lineStyle(2, 0xff00ff, 0.8);
-    plateRects.forEach((r) => {
-      debug.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
-    });
-    */
   }
 }

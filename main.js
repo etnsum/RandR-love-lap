@@ -5,11 +5,11 @@ const config = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800,
-    height: 872,
+    width: 1290,
+    height: 2796,
   },
 
-  scene: [TitleScene, Stage1Scene, Stage2Scene, EndingAScene, EndingBScene],
+  scene: [TitleScene, Stage1Scene, Stage2Scene, EndingAScene, EndingBScene], //TitleScene, Stage1Scene,
 };
 
 // 🔥 여기에서 Phaser.Game을 "한 번만" 생성하고 변수에 담아야 한다.
