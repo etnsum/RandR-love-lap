@@ -71,6 +71,10 @@ class Stage2Scene extends Phaser.Scene {
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;
 
+
+    let trayLocked = false;   // 트레이 클릭 막는 용
+
+
     // depth
     const DEPTH_BG = 0;
     const DEPTH_WORLD = 10;
@@ -307,7 +311,7 @@ class Stage2Scene extends Phaser.Scene {
     // 판정영역
     const plateRects = plateConfigs.map((cfg, i) => {
       const { x, y } = cfg.center;
-      const rect = { x1: x - 300, x2: x + 300, y1: y - 900, y2: y + 300 };
+      const rect = { x1: x - 300, x2: x + 300, y1: y - 900, y2: y + 500 };
       console.log('📦 plateRect', i, rect);
       return rect;
     });
@@ -315,16 +319,16 @@ class Stage2Scene extends Phaser.Scene {
     let currentPlateIndex = 0;
 
     // 디버그
-    // const debugRects = [];
-    // const rectGfx = scene.add.graphics()
-    //   .setDepth(DEPTH_WORLD + 999)   // 1bg 위에 보이게
-    //   .setScrollFactor(1);           // 월드 기준 (카메라 따라 움직임)
+    const debugRects = [];
+    const rectGfx = scene.add.graphics()
+      .setDepth(DEPTH_WORLD + 999)   // 1bg 위에 보이게
+      .setScrollFactor(1);           // 월드 기준 (카메라 따라 움직임)
 
-    // rectGfx.lineStyle(4, 0x00ff00, 1); // 두께, 색, 알파
+    rectGfx.lineStyle(4, 0x00ff00, 1); // 두께, 색, 알파
 
-    // plateRects.forEach((r, i) => {
-    //   rectGfx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
-    // });
+    plateRects.forEach((r, i) => {
+      rectGfx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
+    });
 
     // 트레이
     const DESIGN_TRAY_X = 638.452;
@@ -364,6 +368,8 @@ class Stage2Scene extends Phaser.Scene {
         y: b.bottom - paddingBottom
       };
     };
+
+    
 
 
 
@@ -501,6 +507,24 @@ class Stage2Scene extends Phaser.Scene {
 
     };
 
+    let activeDrag = null;
+
+    //
+    //
+    const lockTray = () => {
+  if (trayLocked) return;
+  trayLocked = true;
+
+  // 트레이에 떠있는 아이콘들만 클릭 막기
+  trayIcons.forEach(icon => icon.disableInteractive?.());
+};
+
+const unlockTray = () => {
+  trayLocked = false;
+  // unlock은 보통 updateTrayForPlate가 새로 만들면서 자동으로 interactive 걸리니까
+  // 굳이 여기서 enableInteractive 할 필요 없음
+};
+
 
     // 트레이 아이콘 갱신
     const updateTrayForPlate = (plateIndex) => {
@@ -546,38 +570,145 @@ class Stage2Scene extends Phaser.Scene {
         // 나머지는 클릭 가능
         icon.setInteractive({ useHandCursor: true });
 
-        icon.on('pointerdown', (pointer) => {
-          const dragKey = dragTextureMap[pieceKey] ?? trayKey;
 
-          const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
-            .setDepth(DEPTH_DRAG)
-            .setScrollFactor(1)
-            .setInteractive({ useHandCursor: true });
+let armedPieceKey = null;   // 들어간 순간의 pieceKey
+let armedInside = false;    // 들어갔는지 여부
 
-          scene.input.setDraggable(clone);
+icon.on('pointerdown', (pointer) => {
+  if (trayLocked) return;
 
-          clone.on('drag', (pointer, dragX, dragY) => {
-            clone.x = dragX;
-            clone.y = dragY;
-          });
+  const dragKey = dragTextureMap[pieceKey] ?? trayKey;
 
-          clone.on('dragend', () => {
-            const rect = plateRects[currentPlateIndex];
-            const inside = isInsidePlateRect(clone.x, clone.y, rect);
+  const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
+    .setDepth(DEPTH_DRAG)
+    .setScrollFactor(1)
+    .setInteractive({ useHandCursor: true });
 
-            console.log('🔹 dragend', {
-              plateIndex: currentPlateIndex,
-              pieceKey,
-              cloneX: clone.x,
-              cloneY: clone.y,
-              rect,
-              inside,
-            });
+  scene.input.setDraggable(clone);
 
-            clone.destroy();
-            if (inside) onPlateFilled(pieceKey);
-          });
-        });
+  activeDrag?.destroy();
+  activeDrag = clone;
+
+  // ✅ 드래그 시작할 때 판정 상태 초기화
+  armedPieceKey = pieceKey;
+  armedInside = false;
+
+  clone.on('drag', (pointer, dragX, dragY) => {
+    clone.x = dragX;
+    clone.y = dragY;
+
+    // ✅ “들어갔는지”만 체크하고, 사라지게 하지 말기
+    const rect = plateRects[currentPlateIndex];
+    const inside = isInsidePlateRect(clone.x, clone.y, rect);
+
+    if (inside && !armedInside) {
+      armedInside = true;
+
+      // ✅ 여기서 원하는 락: “트레이만” 클릭 막기
+      trayLocked = true;
+      trayIcons.forEach(ic => ic.disableInteractive?.());
+    }
+
+    // (선택) 다시 밖으로 나오면 armedInside 풀어줄지 말지는 취향
+    // 나는 보통 "한번 들어가면 확정"으로 둠.
+  });
+
+  clone.on('dragend', () => {
+    // ✅ 손 뗄 때 사라짐
+    clone.destroy();
+    if (activeDrag === clone) activeDrag = null;
+
+    // ✅ 손 뗄 때 판정
+    if (armedInside) {
+      onPlateFilled(armedPieceKey);
+    } else {
+      // 판정 실패면 트레이 락 풀어줘야 다음 드래그 가능
+      trayLocked = false;
+      updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive 걸어줌(가장 간단)
+    }
+
+    armedInside = false;
+    armedPieceKey = null;
+  });
+});
+
+
+// icon.on('pointerdown', (pointer) => {
+//   if (trayLocked) return;
+
+//   const dragKey = dragTextureMap[pieceKey] ?? trayKey;
+
+//   const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
+//     .setDepth(DEPTH_DRAG)
+//     .setScrollFactor(1)
+//     .setInteractive({ useHandCursor: true });
+
+//   scene.input.setDraggable(clone);
+
+//   if (activeDrag) activeDrag.destroy();
+//   activeDrag = clone;
+
+//   clone.on('drag', (pointer, dragX, dragY) => {
+//     clone.x = dragX;
+//     clone.y = dragY;
+
+//     // ✅ “드래그 중 판정”을 하고 싶으면 여기서 체크
+//     const rect = plateRects[currentPlateIndex];
+//     const inside = isInsidePlateRect(clone.x, clone.y, rect);
+
+//     if (inside) {
+//       // 🔥 여기서 전역 input 끄지 말고!
+//       lockTray();          // ✅ 트레이만 락
+//       clone.disableInteractive?.(); // ✅ 드래그 더 못 하게만(선택)
+//       // 바로 판정 처리하고 싶으면:
+//       clone.destroy();
+//       if (activeDrag === clone) activeDrag = null;
+
+//       onPlateFilled(pieceKey);
+//     }
+//   });
+
+//   clone.on('dragend', () => {
+//     // 드래그 중 판정 안 썼다면 기존처럼 여기서 판정하면 됨
+//     if (!clone.active) return; // 이미 destroy됐으면 끝
+//     clone.destroy();
+//     if (activeDrag === clone) activeDrag = null;
+//   });
+// });
+
+
+        // icon.on('pointerdown', (pointer) => {
+        //   const dragKey = dragTextureMap[pieceKey] ?? trayKey;
+
+        //   const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
+        //     .setDepth(DEPTH_DRAG)
+        //     .setScrollFactor(1)
+        //     .setInteractive({ useHandCursor: true });
+
+        //   scene.input.setDraggable(clone);
+
+        //   clone.on('drag', (pointer, dragX, dragY) => {
+        //     clone.x = dragX;
+        //     clone.y = dragY;
+        //   });
+
+        //   clone.on('dragend', () => {
+        //     const rect = plateRects[currentPlateIndex];
+        //     const inside = isInsidePlateRect(clone.x, clone.y, rect);
+
+        //     console.log('🔹 dragend', {
+        //       plateIndex: currentPlateIndex,
+        //       pieceKey,
+        //       cloneX: clone.x,
+        //       cloneY: clone.y,
+        //       rect,
+        //       inside,
+        //     });
+
+        //     clone.destroy();
+        //     if (inside) onPlateFilled(pieceKey);
+        //   });
+        // });
       });
 
       if (cfg.descKey) {
@@ -593,10 +724,17 @@ class Stage2Scene extends Phaser.Scene {
 
     // 카메라 이동
     let loadedPlateKeys = null; // ✅ 현재 plate에서 로드한 키들 기록
+    
 
 const focusCameraOnPlate = (index, instant = false) => {
   const nextCfg = plateConfigs[index];
   const nextKeys = keysForPlate(nextCfg);
+  // if (isTransitioning) return;     // ✅ 중복 전환 방지(핵중요)
+
+  // isTransitioning = true;
+  // scene.input.enabled = false;
+  // if (activeDrag) { activeDrag.destroy(); activeDrag = null; }
+
 
   // ✅ 1) 다음 plate 필요한 리소스 먼저 로드
   loadKeysIfNeeded(nextKeys, () => {
@@ -633,6 +771,10 @@ const finish = () => {
     const toRemove = prevKeys.filter(k => !keep.has(k));
     unloadKeys(toRemove);
   }
+
+    scene.input.enabled = true;
+    isTransitioning = false;
+    trayLocked = false;
 };
 
 
@@ -652,42 +794,6 @@ const finish = () => {
     }
   });
 };
-
-    // const focusCameraOnPlate = (index, instant = false) => {
-    //   const c = plateConfigs[index].center;
-
-    //   const targetScrollX = Phaser.Math.Clamp(
-    //     c.x - gameWidth / 2,
-    //     cam._bounds.x,
-    //     cam._bounds.right - gameWidth
-    //   );
-    //   const targetScrollY = Phaser.Math.Clamp(
-    //     c.y - gameHeight / 2,
-    //     cam._bounds.y,
-    //     cam._bounds.bottom - gameHeight
-    //   );
-
-    //   console.log('🎥 focusCameraOnPlate', { index, targetScrollX, targetScrollY, instant });
-
-    //   if (instant) {
-    //     cam.scrollX = targetScrollX;
-    //     cam.scrollY = targetScrollY;
-    //     currentPlateIndex = index;
-    //     updateTrayForPlate(index);
-    //   } else {
-    //     scene.tweens.add({
-    //       targets: cam,
-    //       scrollX: targetScrollX,
-    //       scrollY: targetScrollY,
-    //       duration: 600,
-    //       ease: 'Cubic.easeInOut',
-    //       onComplete: () => {
-    //         currentPlateIndex = index;
-    //         updateTrayForPlate(index);
-    //       },
-    //     });
-    //   }
-    // };
 
     // 시작
     focusCameraOnPlate(0, true);
