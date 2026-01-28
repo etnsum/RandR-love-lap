@@ -179,7 +179,7 @@ class Stage2Scene extends Phaser.Scene {
       '3red': 'images/S2/3red.png',
       '3gre': 'images/S2/3gre.png',
       '3whi': 'images/S2/3whi.png',
-      '3bg': 'images/S2/3bg.png',
+      //'3bg': 'images/S2/3bg.png',
 
       // 4
       lab: 'images/S2/lab.png',
@@ -187,7 +187,7 @@ class Stage2Scene extends Phaser.Scene {
       idcard: 'images/S2/idcard.png',
       texts: 'images/S2/texts.png',
       '4rain': 'images/S2/4rain.png',
-      '4bg': 'images/S2/4bg.png',
+      //'4bg': 'images/S2/4bg.png',
 
       // 5
       foods: 'images/S2/foods.png',
@@ -196,7 +196,7 @@ class Stage2Scene extends Phaser.Scene {
       chicken: 'images/S2/chicken.png',
       catleaf: 'images/S2/catleaf.png',
       '5rain': 'images/S2/5rain.png',
-      '5bg': 'images/S2/5bg.png',
+      //'5bg': 'images/S2/5bg.png',
 
       // 6
       fire: 'images/S2/6fire.png',
