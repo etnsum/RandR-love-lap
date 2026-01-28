@@ -18,7 +18,7 @@ class TitleScene extends Phaser.Scene {
     // 게임 브금
     this.load.audio('bgm', 'BGM.mp3');
     // 타이틀 애니메이션
-    this.load.video('opening', 'images/title/opening.mp4', 'loadeddata', false, true);
+    this.load.video('opening', 'images/title/open.mp4', 'loadeddata', false, true);
   }
 
   create() {
