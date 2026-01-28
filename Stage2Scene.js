@@ -9,60 +9,6 @@ class Stage2Scene extends Phaser.Scene {
     this.load.image('bgcolor', 'images/S2/bgcolor.png');
     this.load.image('1bg', 'images/S2/1bg.png');
     this.load.image('board',   'image/basic/dag.png'); 
-
-    // // 재료 아이콘
-    // // 첫번째
-    // this.load.image('cat', 'images/S2/neko.png');
-    // this.load.image('dog', 'images/S2/dog.png');
-    // this.load.image('duck', 'images/S2/duck.png');
-    // this.load.image('bunny', 'images/S2/bunny.png');
-    // this.load.image('yel', 'images/S2/yel.png');
-    // this.load.image('1pink', 'images/S2/1pink.png');
-    // this.load.image('1blue', 'images/S2/1blue.png');
-    // this.load.image('1orange', 'images/S2/1orange.png');
-    // this.load.image('animal', 'images/S2/animal.png');
-    // // 두번째
-    // this.load.image('lemon', 'images/S2/lemon.png');
-    // this.load.image('berry', 'images/S2/berry.png');
-    // this.load.image('coffee', 'images/S2/coffee.png');
-    // this.load.image('catfood', 'images/S2/catfood.png');
-    // this.load.image('choco', 'images/S2/choco.png');
-    // this.load.image('2pink', 'images/S2/2pink.png');
-    // this.load.image('2blue', 'images/S2/2blue.png');
-    // this.load.image('2orange', 'images/S2/2orange.png');
-    // this.load.image('cafe', 'images/S2/cafe.png');
-    // this.load.image('2bg', 'images/S2/2bg.png');
-    // // 세번째
-    // this.load.image('flower', 'images/S2/flower.png');
-    // this.load.image('greflo', 'images/S2/greflo.png');
-    // this.load.image('yelrose', 'images/S2/yelrose.png');
-    // this.load.image('redrose', 'images/S2/redrose.png');
-    // this.load.image('whirose', 'images/S2/whirose.png');
-    // this.load.image('3yel', 'images/S2/3yel.png');
-    // this.load.image('3red', 'images/S2/3red.png');
-    // this.load.image('3gre', 'images/S2/3gre.png');
-    // this.load.image('3whi', 'images/S2/3whi.png');
-    // this.load.image('3bg', 'images/S2/3bg.png');
-    // // 네번째
-    // this.load.image('lab', 'images/S2/lab.png');
-    // this.load.image('nekobeard', 'images/S2/nekobeard.png');
-    // this.load.image('idcard', 'images/S2/idcard.png');
-    // this.load.image('texts', 'images/S2/texts.png');
-    // this.load.image('4rain', 'images/S2/4rain.png');
-    // this.load.image('4bg', 'images/S2/4bg.png');
-    // //다섯번째
-    // this.load.image('foods', 'images/S2/foods.png');
-    // this.load.image('egg', 'images/S2/egg.png');
-    // this.load.image('mandoo', 'images/S2/mandoo.png');
-    // this.load.image('chicken', 'images/S2/chicken.png');
-    // this.load.image('catleaf', 'images/S2/catleaf.png');
-    // this.load.image('5rain', 'images/S2/5rain.png');
-    // this.load.image('5bg', 'images/S2/5bg.png');
-    // //마지막 단계 + 재료창
-    // this.load.image('fire', 'images/S2/6fire.png');
-    // this.load.image('lighter', 'images/S2/6lighter.png');
-    // this.load.image('firelighter', 'images/S2/6firelighter.png');
-    // this.load.image('comment', 'images/S2/6comment.png');
     this.load.image('box', 'images/S2/box.png'); //재료창
   }
 
@@ -444,7 +390,7 @@ class Stage2Scene extends Phaser.Scene {
       let baseY = img.scaleY;
       const amp = 0.50;            // 펄럭 폭
       const growRate = 1.2;       // 성장 속도
-      const maxY = baseY * 2.0;    // 최대 크기
+      const maxY = baseY * 1.8;    // 최대 크기
 
       const flapTween = scene.tweens.add({
         targets: img,
@@ -574,62 +520,80 @@ const unlockTray = () => {
 let armedPieceKey = null;   // 들어간 순간의 pieceKey
 let armedInside = false;    // 들어갔는지 여부
 
-icon.on('pointerdown', (pointer) => {
+// 아이콘 만들 때(또는 updateTrayForPlate에서 icon 만들 때) 한 번만
+scene.input.setDraggable(icon);
+scene.input.dragDistanceThreshold = 0;
+
+// ✅ 입력은 icon이 담당, 비주얼은 clone이 담당
+icon.on('dragstart', (pointer) => {
   if (trayLocked) return;
 
   const dragKey = dragTextureMap[pieceKey] ?? trayKey;
 
+  // clone은 월드에 생성(plateRect가 월드 판정이라서 ScrollFactor 1 유지)
   const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
     .setDepth(DEPTH_DRAG)
     .setScrollFactor(1)
     .setInteractive({ useHandCursor: true });
 
-  scene.input.setDraggable(clone);
-
+  // activeDrag는 기존처럼 유지
   activeDrag?.destroy();
   activeDrag = clone;
 
-  // ✅ 드래그 시작할 때 판정 상태 초기화
+  // ✅ 드래그 시작할 때 판정 상태 초기화 (기존 로직 그대로)
   armedPieceKey = pieceKey;
   armedInside = false;
 
-  clone.on('drag', (pointer, dragX, dragY) => {
-    clone.x = dragX;
-    clone.y = dragY;
+  // (선택) 드래그 중 아이콘 자체는 안 보이게
+  // icon.setVisible(false);
+});
 
-    // ✅ “들어갔는지”만 체크하고, 사라지게 하지 말기
-    const rect = plateRects[currentPlateIndex];
-    const inside = isInsidePlateRect(clone.x, clone.y, rect);
+icon.on('drag', (pointer) => {
+  if (!activeDrag) return;
 
-    if (inside && !armedInside) {
-      armedInside = true;
+  activeDrag.x = pointer.worldX;
+  activeDrag.y = pointer.worldY;
 
-      // ✅ 여기서 원하는 락: “트레이만” 클릭 막기
-      trayLocked = true;
-      trayIcons.forEach(ic => ic.disableInteractive?.());
-    }
+  // ✅ 월드 → 스크린 변환
+  const screenX = activeDrag.x - cam.scrollX;
+  const screenY = activeDrag.y - cam.scrollY;
 
-    // (선택) 다시 밖으로 나오면 armedInside 풀어줄지 말지는 취향
-    // 나는 보통 "한번 들어가면 확정"으로 둠.
-  });
+  // ✅ “들어갔는지”만 체크하고, 사라지게 하지 말기 (기존 로직 그대로)
+  const rect = plateRects[currentPlateIndex];
+  const inside = isInsidePlateRect(activeDrag.x, activeDrag.y, rect);
 
-  clone.on('dragend', () => {
-    // ✅ 손 뗄 때 사라짐
-    clone.destroy();
-    if (activeDrag === clone) activeDrag = null;
+  if (inside && !armedInside) {
+    armedInside = true;
 
-    // ✅ 손 뗄 때 판정
-    if (armedInside) {
-      onPlateFilled(armedPieceKey);
-    } else {
-      // 판정 실패면 트레이 락 풀어줘야 다음 드래그 가능
-      trayLocked = false;
-      updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive 걸어줌(가장 간단)
-    }
+    // ✅ 여기서 원하는 락: “트레이만” 클릭 막기
+    trayLocked = true;
+    // trayIcons.forEach(ic => ic.disableInteractive?.());
+    trayIcons.forEach(ic => {
+      if (ic !== icon) ic.disableInteractive?.();
+    });
+  }
+});
 
-    armedInside = false;
-    armedPieceKey = null;
-  });
+icon.on('dragend', () => {
+  if (!activeDrag) return;
+
+  // ✅ 손 뗄 때 clone 사라짐 (기존 로직 그대로)
+  activeDrag.destroy();
+  activeDrag = null;
+
+  // (선택) 아이콘 다시 보이게
+  // icon.setVisible(true);
+
+  // ✅ 손 뗄 때 판정 (기존 로직 그대로)
+  if (armedInside) {
+    onPlateFilled(armedPieceKey);
+  } else {
+    trayLocked = false;
+    updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive
+  }
+
+  armedInside = false;
+  armedPieceKey = null;
 });
 
 
@@ -645,70 +609,52 @@ icon.on('pointerdown', (pointer) => {
 
 //   scene.input.setDraggable(clone);
 
-//   if (activeDrag) activeDrag.destroy();
+//   activeDrag?.destroy();
 //   activeDrag = clone;
+
+//   // ✅ 드래그 시작할 때 판정 상태 초기화
+//   armedPieceKey = pieceKey;
+//   armedInside = false;
 
 //   clone.on('drag', (pointer, dragX, dragY) => {
 //     clone.x = dragX;
 //     clone.y = dragY;
 
-//     // ✅ “드래그 중 판정”을 하고 싶으면 여기서 체크
+//     // ✅ “들어갔는지”만 체크하고, 사라지게 하지 말기
 //     const rect = plateRects[currentPlateIndex];
 //     const inside = isInsidePlateRect(clone.x, clone.y, rect);
 
-//     if (inside) {
-//       // 🔥 여기서 전역 input 끄지 말고!
-//       lockTray();          // ✅ 트레이만 락
-//       clone.disableInteractive?.(); // ✅ 드래그 더 못 하게만(선택)
-//       // 바로 판정 처리하고 싶으면:
-//       clone.destroy();
-//       if (activeDrag === clone) activeDrag = null;
+//     if (inside && !armedInside) {
+//       armedInside = true;
 
-//       onPlateFilled(pieceKey);
+//       // ✅ 여기서 원하는 락: “트레이만” 클릭 막기
+//       trayLocked = true;
+//       trayIcons.forEach(ic => ic.disableInteractive?.());
 //     }
+
+//     // (선택) 다시 밖으로 나오면 armedInside 풀어줄지 말지는 취향
+//     // 나는 보통 "한번 들어가면 확정"으로 둠.
 //   });
 
 //   clone.on('dragend', () => {
-//     // 드래그 중 판정 안 썼다면 기존처럼 여기서 판정하면 됨
-//     if (!clone.active) return; // 이미 destroy됐으면 끝
+//     // ✅ 손 뗄 때 사라짐
 //     clone.destroy();
 //     if (activeDrag === clone) activeDrag = null;
+
+//     // ✅ 손 뗄 때 판정
+//     if (armedInside) {
+//       onPlateFilled(armedPieceKey);
+//     } else {
+//       // 판정 실패면 트레이 락 풀어줘야 다음 드래그 가능
+//       trayLocked = false;
+//       updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive 걸어줌(가장 간단)
+//     }
+
+//     armedInside = false;
+//     armedPieceKey = null;
 //   });
 // });
 
-
-        // icon.on('pointerdown', (pointer) => {
-        //   const dragKey = dragTextureMap[pieceKey] ?? trayKey;
-
-        //   const clone = scene.add.image(pointer.worldX, pointer.worldY, dragKey)
-        //     .setDepth(DEPTH_DRAG)
-        //     .setScrollFactor(1)
-        //     .setInteractive({ useHandCursor: true });
-
-        //   scene.input.setDraggable(clone);
-
-        //   clone.on('drag', (pointer, dragX, dragY) => {
-        //     clone.x = dragX;
-        //     clone.y = dragY;
-        //   });
-
-        //   clone.on('dragend', () => {
-        //     const rect = plateRects[currentPlateIndex];
-        //     const inside = isInsidePlateRect(clone.x, clone.y, rect);
-
-        //     console.log('🔹 dragend', {
-        //       plateIndex: currentPlateIndex,
-        //       pieceKey,
-        //       cloneX: clone.x,
-        //       cloneY: clone.y,
-        //       rect,
-        //       inside,
-        //     });
-
-        //     clone.destroy();
-        //     if (inside) onPlateFilled(pieceKey);
-        //   });
-        // });
       });
 
       if (cfg.descKey) {
@@ -729,12 +675,6 @@ icon.on('pointerdown', (pointer) => {
 const focusCameraOnPlate = (index, instant = false) => {
   const nextCfg = plateConfigs[index];
   const nextKeys = keysForPlate(nextCfg);
-  // if (isTransitioning) return;     // ✅ 중복 전환 방지(핵중요)
-
-  // isTransitioning = true;
-  // scene.input.enabled = false;
-  // if (activeDrag) { activeDrag.destroy(); activeDrag = null; }
-
 
   // ✅ 1) 다음 plate 필요한 리소스 먼저 로드
   loadKeysIfNeeded(nextKeys, () => {

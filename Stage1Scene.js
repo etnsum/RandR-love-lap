@@ -4,55 +4,8 @@ class Stage1Scene extends Phaser.Scene {
 
   constructor() {
     super('Stage1');
-    //this._introVideoEl = null; // ✅ 비디오 DOM 참조 저장
   }
 
-
-    // ✅ DOM video로 WebM 인트로 재생 (투명 유지)
-  // playIntroWebM(onEnd) {
-  //   // 혹시 남아있으면 제거
-  //   this.removeIntroWebM();
-
-  //   const video = document.createElement('video');
-  //   video.src = 'image/basic/intro.webm';
-  //   video.autoplay = true;
-  //   video.muted = true;          // 모바일 자동재생 필수
-  //   video.playsInline = true;    // iOS/모바일 필수
-  //   video.preload = 'auto';
-
-  //   // Phaser 캔버스 위에 덮기
-  //   video.style.position = 'fixed';
-  //   video.style.left = '0';
-  //   video.style.top = '0';
-  //   video.style.width = '100vw';
-  //   video.style.height = '100vh';
-  //   video.style.objectFit = 'contain'; // 꽉채움 원하면 cover
-  //   video.style.pointerEvents = 'none';
-  //   video.style.zIndex = '999999';
-
-  //   document.body.appendChild(video);
-  //   this._introVideoEl = video;
-
-  //   const cleanup = () => {
-  //     this.removeIntroWebM();
-  //     onEnd?.();
-  //   };
-
-  //   video.addEventListener('ended', cleanup, { once: true });
-  //   video.addEventListener('error', cleanup, { once: true });
-
-  //   // 일부 환경에서 autoplay가 막히면 catch
-  //   const p = video.play();
-  //   if (p && p.catch) p.catch(() => cleanup());
-  // }
-
-  // removeIntroWebM() {
-  //   if (this._introVideoEl) {
-  //     try { this._introVideoEl.pause(); } catch {}
-  //     try { this._introVideoEl.remove(); } catch {}
-  //     this._introVideoEl = null;
-  //   }
-  // }
 
   preload() {
     // ✅ 배경 레이어
@@ -62,6 +15,8 @@ class Stage1Scene extends Phaser.Scene {
 
     this.load.image('Pboard',   'image/basic/board.png');
     this.load.image('boardObj', 'image/s1_board/obj.png');
+    this.load.image('dragIcon', 'image/drag_icon.png'); //드래그 해방~
+    this.load.image('boardup', 'image/basic/boards.png'); //위에 씌울 것...
 
     // ✅ 숨은 오브젝트(피스) 5개
     this.load.image('piece1', 'image/s1_P/1.png');
@@ -85,19 +40,15 @@ class Stage1Scene extends Phaser.Scene {
 
     // 3, 2, 1
     //Stage1Scene.js
-    const FRAME_COUNT = 69;
+    // const FRAME_COUNT = 69;
 
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const key = `intro_${i}`; // 0 ~ 137
-      const fileIndex = i + 1; // 1 ~ 138
-      const file = `image/basic/intro2/intro_${String(fileIndex).padStart(2, '0')}.png`;
+    // for (let i = 0; i < FRAME_COUNT; i++) {
+    //   const key = `intro_${i}`; // 0 ~ 137
+    //   const fileIndex = i + 1; // 1 ~ 138
+    //   const file = `image/basic/intro2/intro_${String(fileIndex).padStart(2, '0')}.png`;
 
-      this.load.image(key, file);
-    }
-
-
-
-
+    //   this.load.image(key, file);
+    // }
   }
 
   create() {
@@ -115,6 +66,7 @@ class Stage1Scene extends Phaser.Scene {
     const DEPTH_BG_COLOR = 0;
     const DEPTH_BG_BASE  = 1;
     const DEPTH_BOARD    = 2;
+    const DEPTH_DRAGTEXT = 501;
 
     const DEPTH_PIECES   = 50;     // 월드 피스 기본
     const DEPTH_UI       = 500;    // 트레이(UI)
@@ -124,9 +76,6 @@ class Stage1Scene extends Phaser.Scene {
     // =========================================================
     // 3) 배경
     // =========================================================
-    // scene.add.image(730.8762, 1413.1655, 'bgColor')
-    //   .setOrigin(0.5, 0.5)
-    //   .setDepth(DEPTH_BG_COLOR);
 
     const bgBase = scene.add.image(730.8762, 1413.1655, 'bgColor')
       .setOrigin(0.5, 0.5)
@@ -140,6 +89,9 @@ class Stage1Scene extends Phaser.Scene {
     scene.add.image(728.7, 1398, 'board')
       .setOrigin(0.5, 0.5)
       .setDepth(DEPTH_BOARD);
+
+    let boardUpDepth = DEPTH_FITTED + 50; // 트레이 조각(DEPTH_FITTED)보다 위로
+
 
 
  // =========================================================
@@ -166,25 +118,43 @@ class Stage1Scene extends Phaser.Scene {
     cam.scrollX = CENTER_X;
     cam.scrollY = 0;
 
-    
-      // 3, 2, 1
-      const FRAME_COUNT = 69;
 
-      // ✅ 애니메이션 생성 (한 번만 재생)
-      this.anims.create({
-        key: 'introOnce',
-        frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({
-          key: `intro_${i}`,
-        })),
-        frameRate: 12,
-        repeat: 0,
+    //3,2,1
+    const FRAME_COUNT = 69;
+
+    if (this.textures.exists('intro_0')) {
+      this.playIntro();     // 이미 있으면 바로 재생
+    } else {
+      for (let i = 0; i < FRAME_COUNT; i++) {
+        const key = `intro_${i}`;
+        const fileIndex = i + 1;
+        const file = `image/basic/intro2/intro_${String(fileIndex).padStart(2, '0')}.png`;
+        this.load.image(key, file);
+      }
+
+      this.load.once('complete', () => {
+        this.playIntro();
       });
 
-      const cx = cam.midPoint.x;
-      const cy = cam.midPoint.y;
+      this.load.start();
+    }
 
 
+        
+      // 3, 2, 1
 
+      // ✅ 애니메이션 생성 (한 번만 재생)
+      // this.anims.create({
+      //   key: 'introOnce',
+      //   frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({
+      //     key: `intro_${i}`,
+      //   })),
+      //   frameRate: 12,
+      //   repeat: 0,
+      // });
+
+      // const cx = cam.midPoint.x;
+      // const cy = cam.midPoint.y;
 
     // 4) 트레이(퍼즐판) UI 고정
     const trayImg = scene.add.image(645, 1963.4941, 'Pboard')
@@ -192,61 +162,50 @@ class Stage1Scene extends Phaser.Scene {
       .setScrollFactor(0)
       .setDepth(DEPTH_UI);
 
+
+    const dragIcon =  scene.add.image(640.1564, 1530.7324, 'dragIcon')
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0)
+      .setDepth(DEPTH_DRAGTEXT);
+
     const boardObj = scene.add.image(645, 1963.4941, 'boardObj')
       .setOrigin(0.5, 0.5)
       .setScrollFactor(0)
       .setDepth(DEPTH_UI + 1);
 
-    
+
+      
 
 
 
-      //3, 2, 1
-      // const START_DELAY = 600; // 원하는 만큼 (ms)
+    //   const START_DELAY = 600;
 
-      // this.time.delayedCall(START_DELAY, () => {
-      //   const intro = this.add.sprite(cx, cy, 'intro_0')
-      //     .setOrigin(0.5)
-      //     .setDepth(9999)
-      //     .setScrollFactor(0);
+    // this.time.delayedCall(START_DELAY, () => {
+    //   // ✅ 첫 프레임 키 (너 로드한 키에 맞춰)
+    //   const intro = this.add.sprite(cx, cy, 'intro_0')
+    //     .setOrigin(0.5)
+    //     .setDepth(9999)
+    //     .setScrollFactor(0);
 
-      //   intro.play('introOnce');
+    //   // ✅ 화면 꽉 차게(비율 유지, 잘릴 수 있음)
+    //   const cam = this.cameras.main;
+    //   const scale = Math.max(cam.width / intro.width, cam.height / intro.height);
+    //   intro.setScale(scale);
 
-      //   intro.once('animationcomplete', () => {
-      //     intro.destroy();
-      //     // 여기서 입력 풀기/다음 로직 시작 등
-      //     // this.input.enabled = true;
-      //   });
-      // });
+    //   intro.play('introOnce');
 
-      const START_DELAY = 600;
+    //   intro.once('animationcomplete', () => {
+    //     intro.destroy();
 
-    this.time.delayedCall(START_DELAY, () => {
-      // ✅ 첫 프레임 키 (너 로드한 키에 맞춰)
-      const intro = this.add.sprite(cx, cy, 'intro_0')
-        .setOrigin(0.5)
-        .setDepth(9999)
-        .setScrollFactor(0);
+    //     this.anims.remove('introOnce');
 
-      // ✅ 화면 꽉 차게(비율 유지, 잘릴 수 있음)
-      const cam = this.cameras.main;
-      const scale = Math.max(cam.width / intro.width, cam.height / intro.height);
-      intro.setScale(scale);
+    //     // ✅ 로드한 키랑 똑같이 지우기: intro_0 ~ intro_68
+    //     for (let i = 0; i < FRAME_COUNT; i++) {
+    //       this.textures.remove(`intro_${i}`);
+    //     }
+    //   });
 
-      intro.play('introOnce');
-
-      intro.once('animationcomplete', () => {
-        intro.destroy();
-
-        this.anims.remove('introOnce');
-
-        // ✅ 로드한 키랑 똑같이 지우기: intro_0 ~ intro_68
-        for (let i = 0; i < FRAME_COUNT; i++) {
-          this.textures.remove(`intro_${i}`);
-        }
-      });
-
-    });
+    // });
 
 
 
@@ -323,30 +282,61 @@ piecesConfig.forEach((conf) => {
   src.sourceX = conf.sourceX;
   src.sourceY = conf.sourceY;
 
-  // ✅ 원본 클릭 → 복사본 생성해서 드래그 시작
-  src.on('pointerdown', (pointer) => {
-    // 이미 이 피스 정답 배치 끝났으면 더 못 옮기게
-    if (placedMap.has(conf.key)) return;
+  // // ✅ 원본 클릭 → 복사본 생성해서 드래그 시작
+  // src.on('pointerdown', (pointer) => {
+  //   // 이미 이 피스 정답 배치 끝났으면 더 못 옮기게
+  //   if (placedMap.has(conf.key)) return;
 
-    // 이미 다른 복사본 드래그 중이면 무시
+  //   // 이미 다른 복사본 드래그 중이면 무시
+  //   if (activeDrag) return;
+
+  //   // 복사본 생성 (월드 좌표로 생성)
+  //   const clone = scene.add.image(src.x, src.y, conf.key)
+  //     .setDepth(DEPTH_DRAG)
+  //     .setInteractive({ useHandCursor: true });
+
+  //   clone.pieceKey = conf.key;
+  //   clone.slotIndex = conf.slotIndex;
+  //   clone.startX = src.sourceX;
+  //   clone.startY = src.sourceY;
+
+  //   activeDrag = clone;
+
+  //   // Phaser 드래그 시스템에 등록 + 즉시 드래그 시작
+  //   scene.input.setDraggable(clone);
+  //   scene.input.dragDistanceThreshold = 0; // 클릭하자마자 드래그 잘 되게
+  //   scene.input.dragStart(pointer, clone);
+  // });
+
+  
+  // ✅ 원본을 드래그 대상으로 등록 (핵심)
+  scene.input.setDraggable(src);
+  scene.input.dragDistanceThreshold = 0;
+
+  // ✅ 드래그 시작 시: clone 생성 (비주얼만)
+  src.on('dragstart', (pointer) => {
+    if (placedMap.has(src.pieceKey)) return;
     if (activeDrag) return;
 
-    // 복사본 생성 (월드 좌표로 생성)
-    const clone = scene.add.image(src.x, src.y, conf.key)
+    const clone = scene.add.image(pointer.worldX, pointer.worldY, src.pieceKey)
       .setDepth(DEPTH_DRAG)
       .setInteractive({ useHandCursor: true });
 
-    clone.pieceKey = conf.key;
-    clone.slotIndex = conf.slotIndex;
-    clone.startX = src.sourceX;
-    clone.startY = src.sourceY;
+    clone.pieceKey = src.pieceKey;
+    clone.slotIndex = src.slotIndex;
+    clone.srcRef = src;            // ✅ 원본 참조(나중에 실패 시 다시 보이게 등)
 
     activeDrag = clone;
 
-    // Phaser 드래그 시스템에 등록 + 즉시 드래그 시작
-    scene.input.setDraggable(clone);
-    scene.input.dragDistanceThreshold = 0; // 클릭하자마자 드래그 잘 되게
-    scene.input.dragStart(pointer, clone);
+    // (선택) 드래그 중 원본 숨기면 더 자연스러움
+    //src.setVisible(false);
+  });
+
+  // ✅ 드래그 중: clone만 따라오게
+  src.on('drag', (pointer) => {
+    if (!activeDrag) return;
+    activeDrag.x = pointer.worldX;
+    activeDrag.y = pointer.worldY;
   });
 });
 
@@ -362,65 +352,126 @@ const onAllPiecesCollected = () => {
   });
 };
 
-scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-  if (!gameObject || !gameObject.pieceKey) return;
-  gameObject.x = dragX;
-  gameObject.y = dragY;
-});
+// scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+//   if (!gameObject || !gameObject.pieceKey) return;
+//   gameObject.x = dragX;
+//   gameObject.y = dragY;
+// });
 
 scene.input.on('dragend', (pointer, gameObject) => {
-  if (!gameObject || !gameObject.pieceKey) return;
 
-  const pieceKey = gameObject.pieceKey;
+   // ✅ 이제 판정 대상은 activeDrag (clone)
+  if (!activeDrag) return;
+
+  const clone = activeDrag;
+  const src = clone.srcRef;   // 원본 참조
+  const pieceKey = clone.pieceKey;
 
   // 월드 → 스크린 좌표로 변환해서 트레이 판정
-  const screenX = gameObject.x - cam.scrollX;
-  const screenY = gameObject.y - cam.scrollY;
+  const screenX = clone.x - cam.scrollX;
+  const screenY = clone.y - cam.scrollY;
 
   const trayRect = getTrayRectScreen();
   const droppedOnTray = isInsideRectScreen(screenX, screenY, trayRect);
 
-  // 트레이에 안 떨어지면: 복사본 파괴(=원래로 돌아간 느낌)
-  if (!droppedOnTray) {
-    gameObject.destroy();
+  // 실패: clone 제거 + 원본 다시 보이기
+  if (!droppedOnTray || wrongPieces.includes(pieceKey)) {
+    clone.destroy();
     activeDrag = null;
+    src.setVisible(true);
     return;
   }
 
-  // ✅ 오답: 트레이에 놓아도 "안 놓아짐" = 복사본 파괴
-  if (wrongPieces.includes(pieceKey)) {
-    // (원위치로 돌아가는 애니메이션 원하면 tween으로 이동 후 destroy도 가능)
-    gameObject.destroy();
-    activeDrag = null;
-    return;
-  }
+  // 성공: clone 제거 + 원본은 계속 숨김(또는 destroy)
+  clone.destroy();
+  activeDrag = null;
 
-// ✅ 정답: 트레이에 놓으면 복사본은 사라지고(파괴),
-//        퍼즐판용 작은 피스(s1_pN) 생성해서 끼워진 느낌 연출
-gameObject.destroy();
-activeDrag = null;
+  // 이미 배치된 정답이면 중복 방지
+  if (placedMap.has(pieceKey)) return;
 
-// 이미 배치된 정답이면 중복 방지
-if (placedMap.has(pieceKey)) return;
+  const slotIndex = src.slotIndex;            // ✅ 원본에 저장된 slotIndex 쓰기
+  const fittedKey = `s1_p${slotIndex + 1}`;
+  const pos = slotPos[slotIndex];
 
-// ✅ slotIndex 기반으로 fittedKey 만들기 (너 매칭 그대로 적용됨)
-const slotIndex = gameObject.slotIndex;           // 0~4
-const fittedKey = `s1_p${slotIndex + 1}`;         // s1_p1~s1_p5
+  const fittedPiece = scene.add.image(pos.x, pos.y, fittedKey)
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(DEPTH_FITTED);
 
-// ✅ 위치도 slotIndex 기반으로 (traySlots 활용)
-const pos = slotPos[slotIndex];
+  placedMap.set(pieceKey, { fittedPiece });
 
-const fittedPiece = scene.add.image(pos.x, pos.y, fittedKey)
-  .setOrigin(0.5)
-  .setScrollFactor(0)
-  .setDepth(DEPTH_FITTED);
+  // ✅ 여기서 "덮개" 한 장 쌓기 (UI면 scrollFactor(0) 유지)
+  const cover = scene.add.image(664, 1932.4941, 'boardup')
+    .setOrigin(0.5, 0.5)
+    .setScrollFactor(0)
+    .setDepth(boardUpDepth++);
 
-placedMap.set(pieceKey, { fittedPiece });
-
+  // (선택) 성공 시 원본 완전 삭제하고 싶으면
+  // src.destroy();
 
   // ✅ 정답 다 모이면 다음 씬
   const correctKeys = piecesConfig.map(c => c.key).filter(k => !wrongPieces.includes(k));
   if (correctKeys.every(k => placedMap.has(k))) onAllPiecesCollected();
+//   if (!gameObject || !gameObject.pieceKey) return;
+
+//   const pieceKey = gameObject.pieceKey;
+
+//   // 월드 → 스크린 좌표로 변환해서 트레이 판정
+//   const screenX = gameObject.x - cam.scrollX;
+//   const screenY = gameObject.y - cam.scrollY;
+
+//   const trayRect = getTrayRectScreen();
+//   const droppedOnTray = isInsideRectScreen(screenX, screenY, trayRect);
+
+//   // 트레이에 안 떨어지면: 복사본 파괴(=원래로 돌아간 느낌)
+//   if (!droppedOnTray) {
+//     gameObject.destroy();
+//     activeDrag = null;
+//     return;
+//   }
+
+//   // ✅ 오답: 트레이에 놓아도 "안 놓아짐" = 복사본 파괴
+//   if (wrongPieces.includes(pieceKey)) {
+//     // (원위치로 돌아가는 애니메이션 원하면 tween으로 이동 후 destroy도 가능)
+//     gameObject.destroy();
+//     activeDrag = null;
+//     return;
+//   }
+
+// // ✅ 정답: 트레이에 놓으면 복사본은 사라지고(파괴),
+// //        퍼즐판용 작은 피스(s1_pN) 생성해서 끼워진 느낌 연출
+// gameObject.destroy();
+// activeDrag = null;
+
+// // 이미 배치된 정답이면 중복 방지
+// if (placedMap.has(pieceKey)) return;
+
+// // ✅ slotIndex 기반으로 fittedKey 만들기 (너 매칭 그대로 적용됨)
+// const slotIndex = gameObject.slotIndex;           // 0~4
+// const fittedKey = `s1_p${slotIndex + 1}`;         // s1_p1~s1_p5
+
+// // ✅ 위치도 slotIndex 기반으로 (traySlots 활용)
+// const pos = slotPos[slotIndex];
+
+// const fittedPiece = scene.add.image(pos.x, pos.y, fittedKey)
+//   .setOrigin(0.5)
+//   .setScrollFactor(0)
+//   .setDepth(DEPTH_FITTED);
+
+// placedMap.set(pieceKey, { fittedPiece });
+
+
+//   // ✅ 여기서 "덮개" 한 장 쌓기
+//   const cover = scene.add.image(664, 1932.4941, 'boardup')
+//     .setOrigin(0.5, 0.5)
+//     .setScrollFactor(0)
+//     .setDepth(boardUpDepth++);     // ✅ 매번 +1
+
+
+
+//   // ✅ 정답 다 모이면 다음 씬
+//   const correctKeys = piecesConfig.map(c => c.key).filter(k => !wrongPieces.includes(k));
+//   if (correctKeys.every(k => placedMap.has(k))) onAllPiecesCollected();
 });
 
 
@@ -463,4 +514,46 @@ placedMap.set(pieceKey, { fittedPiece });
       else if (currentPos === 'left') { moveCameraTo(CENTER_X); currentPos = 'center'; }
     });
   }
+
+  playIntro() {
+      const FRAME_COUNT = 69;
+      const START_DELAY = 50;
+
+      // ✅ 애니메이션 생성(중복 방지)
+      if (!this.anims.exists('introOnce')) {
+        this.anims.create({
+          key: 'introOnce',
+          frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({ key: `intro_${i}` })),
+          frameRate: 12,
+          repeat: 0,
+        });
+      }
+
+      const cam = this.cameras.main;
+      const cx = this.cameras.main.width / 2;
+      const cy = this.cameras.main.height / 2;
+
+      this.time.delayedCall(START_DELAY, () => {
+        const intro = this.add.sprite(cx, cy, 'intro_0')
+          .setOrigin(0.5)
+          .setDepth(9999)
+          .setScrollFactor(0);
+
+        const scale = Math.max(cam.width / intro.width, cam.height / intro.height);
+        intro.setScale(scale);
+
+        intro.play('introOnce');
+
+        intro.once('animationcomplete', () => {
+          intro.destroy();
+          this.anims.remove('introOnce');
+
+          for (let i = 0; i < FRAME_COUNT; i++) {
+            this.textures.remove(`intro_${i}`);
+          }
+        });
+      });
+      }
+
 }
+
