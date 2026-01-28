@@ -1,6 +1,9 @@
 // // Stage1Scene.js
+import { fadeToScene } from './sceneTransition.js';
 
-class Stage1Scene extends Phaser.Scene {
+
+// class Stage1Scene extends Phaser.Scene
+export default class Stage1Scene extends Phaser.Scene {
 
   constructor() {
     super('Stage1');
@@ -38,20 +41,20 @@ class Stage1Scene extends Phaser.Scene {
     this.load.image('btnLeft',  'image/basic/left_b.png');
     this.load.image('btnRight', 'image/basic/right_b.png');
 
-    // 3, 2, 1
-    //Stage1Scene.js
-    // const FRAME_COUNT = 69;
-
-    // for (let i = 0; i < FRAME_COUNT; i++) {
-    //   const key = `intro_${i}`; // 0 ~ 137
-    //   const fileIndex = i + 1; // 1 ~ 138
-    //   const file = `image/basic/intro2/intro_${String(fileIndex).padStart(2, '0')}.png`;
-
-    //   this.load.image(key, file);
-    // }
   }
 
   create() {
+    this.cameras.main.fadeIn(350, 0, 0, 0);
+    // let transitioning = false;
+
+    //   this.input.once('pointerdown', () => {
+    //     if (transitioning) return;
+    //     transitioning = true;
+
+    //     this.input.enabled = false;
+
+    //     fadeToScene(this, 'Stage2');
+    //   });
     const scene = this;
     const gameWidth = this.scale.width;    // 1290
     const gameHeight = this.scale.height;  // 2796
@@ -346,9 +349,14 @@ piecesConfig.forEach((conf) => {
 const isInsideRectScreen = (sx, sy, rect) =>
   sx >= rect.x1 && sx <= rect.x2 && sy >= rect.y1 && sy <= rect.y2;
 
+// const onAllPiecesCollected = () => {
+//   scene.time.delayedCall(800, () => {
+//     scene.scene.start('Stage2');
+//   });
+// };
 const onAllPiecesCollected = () => {
   scene.time.delayedCall(800, () => {
-    scene.scene.start('Stage2');
+    fadeToScene(scene, 'Stage2', 350);
   });
 };
 

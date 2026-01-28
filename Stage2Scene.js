@@ -1,6 +1,8 @@
 // Stage2Scene.js
+//import { fadeToScene } from './sceneTransition';
 
-class Stage2Scene extends Phaser.Scene {
+//class Stage2Scene extends Phaser.Scene 
+export default class Stage2Scene extends Phaser.Scene{
   constructor() {
     super('Stage2');
   }
@@ -13,6 +15,7 @@ class Stage2Scene extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.fadeIn(350, 0, 0, 0);
     const scene = this;
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;

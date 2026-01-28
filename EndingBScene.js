@@ -1,4 +1,5 @@
-class EndingBScene extends Phaser.Scene {
+//class EndingBScene extends Phaser.Scene
+export default class EndingAScene extends Phaser.Scene {
   constructor() { super('EndingB'); }
 
   create() {

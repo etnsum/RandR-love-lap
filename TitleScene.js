@@ -1,5 +1,8 @@
 // TitleScene.js
-class TitleScene extends Phaser.Scene {
+import { fadeToScene } from './sceneTransition.js';
+
+//class TitleScene extends Phaser.Scene
+export default class TitleScene extends Phaser.Scene {
   constructor() {
     super('Title');
   }
@@ -90,6 +93,8 @@ class TitleScene extends Phaser.Scene {
     // 자동재생 시도 (안 되면 첫 클릭에서 시작)
     try { opening.play(false); } catch {}
 
+    let transitioning = false;
+
     // --------------------------------
     // 이미지 버튼 헬퍼
     // --------------------------------
@@ -120,11 +125,19 @@ class TitleScene extends Phaser.Scene {
 
     startBtn = makeImageButton(
     1054.1948, 2233.908,
-    'start',
-    () => {
-      scene.scene.start('Stage1');
-    },
-    { originX: 0.5, originY: 0.5, scale: 1 }
+      'start',
+      () => {
+        if (transitioning) return;
+        transitioning = true;
+
+        // 버튼/입력 잠금
+        startBtn.disableInteractive();
+        helpBtn.disableInteractive();
+        this.input.enabled = false;
+
+        fadeToScene(scene, 'Stage1', 350);
+      },
+      { originX: 0.5, originY: 0.5, scale: 1 }
   );
 
   helpBtn = makeImageButton(
@@ -139,35 +152,6 @@ class TitleScene extends Phaser.Scene {
   // ✅ 오프닝 끝날 때까지 버튼 잠금
   startBtn.disableInteractive();
   helpBtn.disableInteractive();
-
-
-
-    // const startBtn = makeImageButton(
-    //   1054.1948, 2233.908,          // 👈 디자이너가 준 중심 좌표
-    //   'start',
-    //   () => {
-    //     scene.scene.start('Stage1');
-    //   },
-    //   {
-    //     originX: 0.5,
-    //     originY: 0.5,    // 👈 중심 좌표니까 필수
-    //     scale: 1,
-    //   }
-    // );
-
-    // const helpBtn = makeImageButton(
-    //   1054.1948, 2003.0677,          // 👈 그대로
-    //   'howto',
-    //   () => {
-    //     showHelpPopup();
-    //   },
-    //   {
-    //     originX: 0.5,
-    //     originY: 0.5,
-    //     scale: 1,
-    //   }
-    // );
-
 
     // --------------------------------
     // 게임방법 팝업 (이미지 레이어)
