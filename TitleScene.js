@@ -10,6 +10,8 @@ export default class TitleScene extends Phaser.Scene {
   preload() {
     // 타이틀 배경 이미지
     this.load.image('titleBg', 'images/title/Comp 2_00059.png');
+    // 로딩이미지
+    this.load.image('loading', 'images/title/output.png');
     // 제조 방법 버튼
     this.load.image('howto', 'image/title/howto.png');
     // 제조 시작 버튼
@@ -43,11 +45,16 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // --------------------------------
-    // 타이틀 배경
+    // 로딩
     // --------------------------------
-    this.add.image(gameWidth / 2, gameHeight / 2, 'titleBg')
-      .setOrigin(0.5)
-      .setScrollFactor(0);
+    // this.add.image(gameWidth / 2, gameHeight / 2, 'loading')
+    //   .setOrigin(0.5)
+    //   .setScrollFactor(0);
+    const loadingImg = this.add.image(gameWidth / 2, gameHeight / 2, 'loading')
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(25);
+
 
     // ✅ 버튼 변수 미리 선언
     let startBtn;
@@ -67,6 +74,12 @@ export default class TitleScene extends Phaser.Scene {
 
     let openingPlaying = true;
 
+    this.time.delayedCall(400, () => {
+      if (!openingPlaying) return;
+      opening.setPaused(false);
+      opening.play();
+    });
+
     const endOpening = () => {
       if (!openingPlaying) return;
       openingPlaying = false;
@@ -77,6 +90,8 @@ export default class TitleScene extends Phaser.Scene {
         duration: 300,
         ease: 'Sine.In',
         onComplete: () => opening.destroy()
+
+        
       });
 
       // ✅ 여기서 버튼 활성화
@@ -87,13 +102,23 @@ export default class TitleScene extends Phaser.Scene {
       // -> 그래서 아래에서 startBtn/helpBtn 만들고 난 뒤, endOpening에서 참조 가능하게 "let"로 선언할 거야.
     };
     
+opening.once('play', () => {
+  loadingImg.destroy();
+  this.add.image(gameWidth/2, gameHeight/2, 'titleBg').setOrigin(0.5);
+});
 
-    opening.once('complete', endOpening);
+opening.once('complete', endOpening);
 
     // 자동재생 시도 (안 되면 첫 클릭에서 시작)
     try { opening.play(false); } catch {}
 
     let transitioning = false;
+
+
+    // this.add.image(gameWidth / 2, gameHeight / 2, 'titleBg')
+    //   .setOrigin(0.5)
+    //   .setScrollFactor(0);
+
 
     // --------------------------------
     // 이미지 버튼 헬퍼
@@ -138,7 +163,7 @@ export default class TitleScene extends Phaser.Scene {
         fadeToScene(scene, 'Stage1', 350);
       },
       { originX: 0.5, originY: 0.5, scale: 1 }
-  );
+  ).setDepth(20);
 
   helpBtn = makeImageButton(
     1054.1948, 2003.0677,
@@ -147,7 +172,7 @@ export default class TitleScene extends Phaser.Scene {
       showHelpPopup();
     },
     { originX: 0.5, originY: 0.5, scale: 1 }
-  );
+  ).setDepth(20);
 
   // ✅ 오프닝 끝날 때까지 버튼 잠금
   startBtn.disableInteractive();

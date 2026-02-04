@@ -71,7 +71,7 @@ export default class Stage2Scene extends Phaser.Scene{
       },
 
       // 물약 좌표
-        overlayPos: { x: 1117, y: 1871.185 }, //
+        overlayPos: { x: 1117, y: 1874.185 }, //
       },
       {
         center: { x: 1120, y: 3500.5298 },
@@ -86,19 +86,20 @@ export default class Stage2Scene extends Phaser.Scene{
       },
 
       // 물약 좌표
-        overlayPos: { x: 1130, y: 3160.5298 }, // 625.9709 x 1415.2414
+        overlayPos: { x: 1130, y: 3164.5298 }, // 625.9709 x 1415.2414
       },
       {
-        center: { x: 2170.3562, y: 1800.5298 },
+        center: { x: 2170.3562, y: 1800.5298 }, //1526.6486 x 1608.5623 850.5151 x 1422.0443  x: 2170.3562, y: 1800.5298
         trayPieces: ['whirose', 'yelrose', 'redrose', 'greflo'],
         descKey: 'flower',
-        overlayMode: 'full',   
+        overlayMode: 'local',   
         overlayMap: {
         whirose: '3whi',
         yelrose: '3yel',
         redrose: '3red',
         greflo: '3gre',
       },
+        overlayPos: { x: 2341.5151, y: 2144.2543 },
       },
       {
         center: { x: 3500.3562, y: 3500.5298 },
@@ -178,10 +179,10 @@ export default class Stage2Scene extends Phaser.Scene{
       yelrose: 'images/S2/yelrose.png',
       redrose: 'images/S2/redrose.png',
       whirose: 'images/S2/whirose.png',
-      '3yel': 'images/S2/3yel.png',
+      '3yel': 'images/S2/3yellow.png',
       '3red': 'images/S2/3red.png',
-      '3gre': 'images/S2/3gre.png',
-      '3whi': 'images/S2/3whi.png',
+      '3gre': 'images/S2/3green.png',
+      '3whi': 'images/S2/3white.png',
       //'3bg': 'images/S2/3bg.png',
 
       // 4
