@@ -21,9 +21,12 @@ export default class TitleScene extends Phaser.Scene {
     // 제조 방법 닫기 버튼
     this.load.image('btnX', 'image/title/btnX.png');
     // 게임 브금
-    this.load.audio('bgm', 'BGM.mp3');
+    this.load.audio('bgm', 'pal.mp3');
     // 타이틀 애니메이션
     this.load.video('opening', 'images/title/open.mp4', 'loadeddata', false, true);
+    // 효과음
+    this.load.audio('btnHover', 'sound/BByorong.mp3');
+
   }
 
   create() {
@@ -54,6 +57,21 @@ export default class TitleScene extends Phaser.Scene {
     .setOrigin(0.5)
     .setScrollFactor(0)
     .setDepth(25);
+
+
+        // 효과음
+    const hoverSound = this.sound.add('btnHover', {
+      volume: 0.4,
+    });
+
+    const addClickSound = (btn) => {
+      if (!btn) return;
+
+      btn.on('pointerdown', () => {
+        if (!btn.input?.enabled) return;
+        hoverSound.play();
+      });
+    };
 
 
     // ✅ 버튼 변수 미리 선언
@@ -120,6 +138,7 @@ opening.once('complete', endOpening);
     //   .setScrollFactor(0);
 
 
+
     // --------------------------------
     // 이미지 버튼 헬퍼
     // --------------------------------
@@ -178,6 +197,10 @@ opening.once('complete', endOpening);
   startBtn.disableInteractive();
   helpBtn.disableInteractive();
 
+    addClickSound(startBtn);
+    addClickSound(helpBtn);
+
+
     // --------------------------------
     // 게임방법 팝업 (이미지 레이어)
     // --------------------------------
@@ -210,6 +233,8 @@ opening.once('complete', endOpening);
       .setOrigin(0.5, 0.5)   // ✅ 중심 좌표니까 필수
       .setScrollFactor(0)
       .setInteractive({ useHandCursor: true });
+
+    addClickSound(btnX);
 
     // 팝업 컨테이너에 추가 (순서 중요: dim → box → x)
     popupContainer.add([dim, howtoBox, btnX]);

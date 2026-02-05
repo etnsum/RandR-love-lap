@@ -41,6 +41,12 @@ export default class Stage1Scene extends Phaser.Scene {
     this.load.image('btnLeft',  'image/basic/left_b.png');
     this.load.image('btnRight', 'image/basic/right_b.png');
 
+    // 효과음
+    this.load.audio('click', 'sound/click.mp3');
+    this.load.audio('btnSound', 'sound/BByorong.mp3');
+    this.load.audio('gripSound', 'sound/hoit.mp3');
+
+
   }
 
   create() {
@@ -96,6 +102,29 @@ export default class Stage1Scene extends Phaser.Scene {
     let boardUpDepth = DEPTH_FITTED + 50; // 트레이 조각(DEPTH_FITTED)보다 위로
 
 
+    //효과음
+    const ClickSound = this.sound.add('click', {
+      volume: 0.5,
+    });
+
+    const BtnSound = this.sound.add('btnSound', {
+      volume: 0.4,
+    });
+
+    const addClickSound = (btn) => {
+      if (!btn) return;
+
+      btn.on('pointerdown', () => {
+        if (!btn.input?.enabled) return;
+        BtnSound.play();
+      });
+    };
+
+      // create
+    const pickSound = scene.sound.add('gripSound', { volume: 0.5 });
+
+
+
 
  // =========================================================
  //  월드 & 카메라 (bgBase 기준)
@@ -144,20 +173,6 @@ export default class Stage1Scene extends Phaser.Scene {
 
 
         
-      // 3, 2, 1
-
-      // ✅ 애니메이션 생성 (한 번만 재생)
-      // this.anims.create({
-      //   key: 'introOnce',
-      //   frames: Array.from({ length: FRAME_COUNT }, (_, i) => ({
-      //     key: `intro_${i}`,
-      //   })),
-      //   frameRate: 12,
-      //   repeat: 0,
-      // });
-
-      // const cx = cam.midPoint.x;
-      // const cy = cam.midPoint.y;
 
     // 4) 트레이(퍼즐판) UI 고정
     const trayImg = scene.add.image(645, 1963.4941, 'Pboard')
@@ -175,40 +190,6 @@ export default class Stage1Scene extends Phaser.Scene {
       .setOrigin(0.5, 0.5)
       .setScrollFactor(0)
       .setDepth(DEPTH_UI + 1);
-
-
-      
-
-
-
-    //   const START_DELAY = 600;
-
-    // this.time.delayedCall(START_DELAY, () => {
-    //   // ✅ 첫 프레임 키 (너 로드한 키에 맞춰)
-    //   const intro = this.add.sprite(cx, cy, 'intro_0')
-    //     .setOrigin(0.5)
-    //     .setDepth(9999)
-    //     .setScrollFactor(0);
-
-    //   // ✅ 화면 꽉 차게(비율 유지, 잘릴 수 있음)
-    //   const cam = this.cameras.main;
-    //   const scale = Math.max(cam.width / intro.width, cam.height / intro.height);
-    //   intro.setScale(scale);
-
-    //   intro.play('introOnce');
-
-    //   intro.once('animationcomplete', () => {
-    //     intro.destroy();
-
-    //     this.anims.remove('introOnce');
-
-    //     // ✅ 로드한 키랑 똑같이 지우기: intro_0 ~ intro_68
-    //     for (let i = 0; i < FRAME_COUNT; i++) {
-    //       this.textures.remove(`intro_${i}`);
-    //     }
-    //   });
-
-    // });
 
 
 
@@ -285,31 +266,9 @@ piecesConfig.forEach((conf) => {
   src.sourceX = conf.sourceX;
   src.sourceY = conf.sourceY;
 
-  // // ✅ 원본 클릭 → 복사본 생성해서 드래그 시작
-  // src.on('pointerdown', (pointer) => {
-  //   // 이미 이 피스 정답 배치 끝났으면 더 못 옮기게
-  //   if (placedMap.has(conf.key)) return;
-
-  //   // 이미 다른 복사본 드래그 중이면 무시
-  //   if (activeDrag) return;
-
-  //   // 복사본 생성 (월드 좌표로 생성)
-  //   const clone = scene.add.image(src.x, src.y, conf.key)
-  //     .setDepth(DEPTH_DRAG)
-  //     .setInteractive({ useHandCursor: true });
-
-  //   clone.pieceKey = conf.key;
-  //   clone.slotIndex = conf.slotIndex;
-  //   clone.startX = src.sourceX;
-  //   clone.startY = src.sourceY;
-
-  //   activeDrag = clone;
-
-  //   // Phaser 드래그 시스템에 등록 + 즉시 드래그 시작
-  //   scene.input.setDraggable(clone);
-  //   scene.input.dragDistanceThreshold = 0; // 클릭하자마자 드래그 잘 되게
-  //   scene.input.dragStart(pointer, clone);
-  // });
+  src.on('pointerdown', () => {
+  scene.sound.play('gripSound', { volume: 0.5 });
+});
 
   
   // ✅ 원본을 드래그 대상으로 등록 (핵심)
@@ -392,6 +351,7 @@ scene.input.on('dragend', (pointer, gameObject) => {
 
   // 성공: clone 제거 + 원본은 계속 숨김(또는 destroy)
   clone.destroy();
+  ClickSound.play();  // ✅ 성공 효과음
   activeDrag = null;
 
   // 이미 배치된 정답이면 중복 방지
@@ -422,64 +382,6 @@ scene.input.on('dragend', (pointer, gameObject) => {
   if (correctKeys.every(k => placedMap.has(k))) onAllPiecesCollected();
 //   if (!gameObject || !gameObject.pieceKey) return;
 
-//   const pieceKey = gameObject.pieceKey;
-
-//   // 월드 → 스크린 좌표로 변환해서 트레이 판정
-//   const screenX = gameObject.x - cam.scrollX;
-//   const screenY = gameObject.y - cam.scrollY;
-
-//   const trayRect = getTrayRectScreen();
-//   const droppedOnTray = isInsideRectScreen(screenX, screenY, trayRect);
-
-//   // 트레이에 안 떨어지면: 복사본 파괴(=원래로 돌아간 느낌)
-//   if (!droppedOnTray) {
-//     gameObject.destroy();
-//     activeDrag = null;
-//     return;
-//   }
-
-//   // ✅ 오답: 트레이에 놓아도 "안 놓아짐" = 복사본 파괴
-//   if (wrongPieces.includes(pieceKey)) {
-//     // (원위치로 돌아가는 애니메이션 원하면 tween으로 이동 후 destroy도 가능)
-//     gameObject.destroy();
-//     activeDrag = null;
-//     return;
-//   }
-
-// // ✅ 정답: 트레이에 놓으면 복사본은 사라지고(파괴),
-// //        퍼즐판용 작은 피스(s1_pN) 생성해서 끼워진 느낌 연출
-// gameObject.destroy();
-// activeDrag = null;
-
-// // 이미 배치된 정답이면 중복 방지
-// if (placedMap.has(pieceKey)) return;
-
-// // ✅ slotIndex 기반으로 fittedKey 만들기 (너 매칭 그대로 적용됨)
-// const slotIndex = gameObject.slotIndex;           // 0~4
-// const fittedKey = `s1_p${slotIndex + 1}`;         // s1_p1~s1_p5
-
-// // ✅ 위치도 slotIndex 기반으로 (traySlots 활용)
-// const pos = slotPos[slotIndex];
-
-// const fittedPiece = scene.add.image(pos.x, pos.y, fittedKey)
-//   .setOrigin(0.5)
-//   .setScrollFactor(0)
-//   .setDepth(DEPTH_FITTED);
-
-// placedMap.set(pieceKey, { fittedPiece });
-
-
-//   // ✅ 여기서 "덮개" 한 장 쌓기
-//   const cover = scene.add.image(664, 1932.4941, 'boardup')
-//     .setOrigin(0.5, 0.5)
-//     .setScrollFactor(0)
-//     .setDepth(boardUpDepth++);     // ✅ 매번 +1
-
-
-
-//   // ✅ 정답 다 모이면 다음 씬
-//   const correctKeys = piecesConfig.map(c => c.key).filter(k => !wrongPieces.includes(k));
-//   if (correctKeys.every(k => placedMap.has(k))) onAllPiecesCollected();
 });
 
 
@@ -521,6 +423,9 @@ scene.input.on('dragend', (pointer, gameObject) => {
       if (currentPos === 'center') { moveCameraTo(RIGHT_X); currentPos = 'right'; }
       else if (currentPos === 'left') { moveCameraTo(CENTER_X); currentPos = 'center'; }
     });
+
+    addClickSound(btnLeft);
+    addClickSound(btnRight);
   }
 
   playIntro() {

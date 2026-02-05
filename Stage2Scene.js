@@ -56,6 +56,43 @@ export default class Stage2Scene extends Phaser.Scene{
     const cam = this.cameras.main;
     cam.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
+    // 스코어 설정
+    const SCORE = {
+      // 1. 베이스(동물)
+      dog: 5,
+      duck: 5,
+      bunny: 5,
+      cat: -5,
+
+      // 2. 분말
+      coffee: 4,     // 에스프레소 분말
+      berry: 10,     // 딸기라떼 분말
+      lemon: 4,      // 레모네이드 분말
+      catfood: -100, // 그냥 츄르(트랩)
+
+      // 3. 추출물(장미/잎)
+      redrose: 5,
+      yelrose: 0,
+      whirose: 0,
+      greflo: -100,  // 개다래 나뭇잎(트랩)
+
+      // 4. 연구소
+      texts: 10,     // 논문
+      idcard: 5,
+      nekobeard: -100,
+
+      // 5. 기타(음식)
+      mandoo: 10,
+      egg: 4,
+      chicken: 0,
+      catleaf: -100,
+
+      // 6. 라이터/코멘트는 점수 없으면 0으로 두거나 아예 생략
+      lighter: 0,
+      comment: 0,
+    };
+
+
     // 재료 설정
     const plateConfigs = [
       {
@@ -324,16 +361,50 @@ export default class Stage2Scene extends Phaser.Scene{
 
 
     // 엔딩/판정 로직(수정해야됨)
+
+    // 엔딩/판정 로직
+    let totalScore = 0;
+    const pickedByPlate = {}; // plateIndex -> pieceKey
+
     const added = {}; // pieceKey별로 true 기록 (원하면 p1/p2 이런식으로 바꿔도 됨)
 
     const isInsidePlateRect = (x, y, rect) =>
       x >= rect.x1 && x <= rect.x2 && y >= rect.y1 && y <= rect.y2;
 
+    const SUCCESS_SCORE = 30;
+    const HIDDEN_CAT_SCORE = -405;
+
     const handleEnding = () => {
-      console.log('🎬 handleEnding', added);
-      // TODO: 네 엔딩 로직으로 교체
-      this.scene.start('EndingA');
+      console.log('🎬 handleEnding', {
+        totalScore,
+        pickedByPlate,
+      });
+
+      // 히든 고양이 엔딩
+      if (totalScore <= HIDDEN_CAT_SCORE) {
+        this.scene.start('EndingC');
+        return;
+      }
+
+      // 성공 엔딩
+      if (totalScore >= SUCCESS_SCORE) {
+        const baseKey = pickedByPlate[0]; // 첫 plate = 베이스
+
+        const endingMap = {
+          dog: 'EndingA1',
+          cat: 'EndingA2',
+          duck: 'EndingA3',
+          bunny: 'EndingA4',
+        };
+
+        this.scene.start(endingMap[baseKey] ?? 'EndingA1');
+        return;
+      }
+
+      // 실패 엔딩
+      this.scene.start('EndingB');
     };
+
 
 
 
@@ -428,6 +499,18 @@ export default class Stage2Scene extends Phaser.Scene{
 
     const onPlateFilled = (pieceKey) => {
       if (isTransitioning) return;
+
+        const score = SCORE[pieceKey] ?? 0;
+
+        totalScore += score;
+        pickedByPlate[currentPlateIndex] = pieceKey;
+
+        console.log(
+          '🧪 plate', currentPlateIndex,
+          'pick', pieceKey,
+          'score', score,
+          'TOTAL', totalScore
+        );
 
       added[pieceKey] = true;
       applyOverlay(currentPlateIndex, pieceKey);

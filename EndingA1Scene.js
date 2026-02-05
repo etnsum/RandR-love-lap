@@ -1,9 +1,9 @@
-//class EndingBScene extends Phaser.Scene
-export default class EndingAScene extends Phaser.Scene {
-  constructor() { super('EndingB'); }
+//class EndingAScene extends Phaser.Scene
+export default class EndingA1Scene extends Phaser.Scene {
+  constructor() { super('EndingA1'); }
 
-      preload() {
-    this.load.image('fail', 'fail.jpg');
+  preload() {
+    this.load.image('dog', 'dog.jpg');
   }
 
   create() {
@@ -12,7 +12,7 @@ export default class EndingAScene extends Phaser.Scene {
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;
 
-    const img = this.add.image(gameWidth / 2, gameHeight / 2, 'fail')
+    const img = this.add.image(gameWidth / 2, gameHeight / 2, 'dog')
       .setOrigin(0.5)
       .setScrollFactor(0)
       .setDepth(25);
@@ -22,8 +22,7 @@ export default class EndingAScene extends Phaser.Scene {
     img.setScale(scale);
 
 
-
-    this.add.text(400, 400, '고백에 실패했어...', {
+    this.add.text(400, 400, '군견엔딩- 고백에 성공했어!!', {
       fontSize: '48px',
       color: '#ffffff'
     }).setOrigin(0.5)
