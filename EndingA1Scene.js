@@ -3,8 +3,7 @@ export default class EndingA1Scene extends Phaser.Scene {
   constructor() { super('EndingA1'); }
 
   preload() {
-    this.load.image('dog', 'dog.jpg');
-    this.load.video('ending', 'ending/dog.mp4', 'loadeddata', false, true);
+    this.load.video('ending', 'ending/dog2.mp4', 'loadeddata', false, true);
   }
 
 create() {

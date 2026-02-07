@@ -73,14 +73,14 @@ export default class Stage2Scene extends Phaser.Scene{
     const SCORE = {
       // 1. 베이스(동물)
       dog: 5,
-      duck: 5,
-      bunny: 5,
+      duck: 2,
+      bunny: 2,
       cat: -5,
 
       // 2. 분말
       coffee: 4,     // 에스프레소 분말
       berry: 10,     // 딸기라떼 분말
-      lemon: 4,      // 레모네이드 분말
+      lemon: 2,      // 레모네이드 분말
       catfood: -100, // 그냥 츄르(트랩)
 
       // 3. 추출물(장미/잎)
@@ -96,7 +96,7 @@ export default class Stage2Scene extends Phaser.Scene{
 
       // 5. 기타(음식)
       mandoo: 10,
-      egg: 4,
+      egg: 5,
       chicken: 0,
       catleaf: -100,
 
@@ -384,7 +384,7 @@ export default class Stage2Scene extends Phaser.Scene{
     const isInsidePlateRect = (x, y, rect) =>
       x >= rect.x1 && x <= rect.x2 && y >= rect.y1 && y <= rect.y2;
 
-    const SUCCESS_SCORE = 30;
+    const SUCCESS_SCORE = 28;
     const HIDDEN_CAT_SCORE = -405;
 
 const handleEnding = () => {
