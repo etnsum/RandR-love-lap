@@ -15,9 +15,6 @@ export default class Stage2Scene extends Phaser.Scene{
     this.load.audio('shalala', 'sound/shalala.mp3');
     this.load.audio('hoit', 'sound/hoit.mp3');
 
-    // 로딩이미지
-    this.load.image('loading', 'images/title/output.png');
-
   }
 
   create() {
@@ -25,29 +22,6 @@ export default class Stage2Scene extends Phaser.Scene{
     const scene = this;
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;
-
-// create() 초반
-const loadingImg = this.add.image(gameWidth / 2, gameHeight / 2, 'loading')
-  .setOrigin(0.5)
-  .setScrollFactor(0)
-  .setDepth(100000);
-
-// (선택) 로딩 중 입력 잠금
-this.input.enabled = false;
-
-// 로딩 잠깐 보여주고 → 페이드아웃
-this.time.delayedCall(800, () => {
-  this.tweens.add({
-    targets: loadingImg,
-    alpha: 0,
-    duration: 800,     // ✅ 여기서 속도 조절
-    ease: 'Sine.Out',
-    onComplete: () => {
-      loadingImg.destroy();
-      this.input.enabled = true; // ✅ 입력 풀기
-    }
-  });
-});
 
 
 

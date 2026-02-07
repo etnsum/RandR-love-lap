@@ -45,7 +45,7 @@ export default class Stage1Scene extends Phaser.Scene {
     this.load.audio('click', 'sound/click.mp3');
     this.load.audio('btnSound', 'sound/BByorong.mp3');
     this.load.audio('gripSound', 'sound/hoit.mp3');
-    this.load.audio('count', 'sound/count.mp3');
+    this.load.audio('count', 'sound/start.mp3');
 
 
   }

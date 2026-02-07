@@ -3,7 +3,7 @@ export default class EndingCScene extends Phaser.Scene {
 
       preload() {
     this.load.image('Cat', 'hiddenCAt.jpg');
-    this.load.video('ending', 'ending/hidden.mp4', 'loadeddata', false, true);
+    this.load.video('ending', 'ending/cat_mobile.mp4', 'loadeddata', false, true);
   }
 
 create() {
