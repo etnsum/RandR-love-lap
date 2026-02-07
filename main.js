@@ -13,7 +13,7 @@ const config = {
   parent: 'game-container',
 
   scale: {
-    mode: Phaser.Scale.ENVELOP, //Phaser.Scale.FIT,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 1290,
     height: 2796,
