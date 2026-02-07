@@ -45,6 +45,7 @@ export default class Stage1Scene extends Phaser.Scene {
     this.load.audio('click', 'sound/click.mp3');
     this.load.audio('btnSound', 'sound/BByorong.mp3');
     this.load.audio('gripSound', 'sound/hoit.mp3');
+    this.load.audio('count', 'sound/count.mp3');
 
 
   }
@@ -152,6 +153,12 @@ export default class Stage1Scene extends Phaser.Scene {
 
 
     //3,2,1
+
+    this.introSfx = this.sound.add('count', { volume: 0.7 });
+
+      // 인트로 들어가기 전에 입력 잠금
+    this.input.enabled = false;
+
     const FRAME_COUNT = 69;
 
     if (this.textures.exists('intro_0')) {
@@ -428,7 +435,18 @@ scene.input.on('dragend', (pointer, gameObject) => {
     addClickSound(btnRight);
   }
 
+  
+
   playIntro() {
+
+      if (this.introSfx && !this.introSfx.isPlaying) {
+    this.introSfx.play();
+    // ✅ count(3,2,1) 끝나면 입력 풀기
+    this.introSfx.once('complete', () => {
+      this.input.enabled = true;
+    });
+    
+  }
       const FRAME_COUNT = 69;
       const START_DELAY = 50;
 

@@ -1,5 +1,5 @@
-// Stage2Scene.js
-//import { fadeToScene } from './sceneTransition';
+//Stage2Scene.js
+import { fadeToScene } from './sceneTransition.js';
 
 //class Stage2Scene extends Phaser.Scene 
 export default class Stage2Scene extends Phaser.Scene{
@@ -12,6 +12,12 @@ export default class Stage2Scene extends Phaser.Scene{
     this.load.image('1bg', 'images/S2/1bg.png');
     this.load.image('board',   'image/basic/dag.png'); 
     this.load.image('box', 'images/S2/box.png'); //재료창
+    this.load.audio('shalala', 'sound/shalala.mp3');
+    this.load.audio('hoit', 'sound/hoit.mp3');
+
+    // 로딩이미지
+    this.load.image('loading', 'images/title/output.png');
+
   }
 
   create() {
@@ -19,6 +25,30 @@ export default class Stage2Scene extends Phaser.Scene{
     const scene = this;
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;
+
+// create() 초반
+const loadingImg = this.add.image(gameWidth / 2, gameHeight / 2, 'loading')
+  .setOrigin(0.5)
+  .setScrollFactor(0)
+  .setDepth(100000);
+
+// (선택) 로딩 중 입력 잠금
+this.input.enabled = false;
+
+// 로딩 잠깐 보여주고 → 페이드아웃
+this.time.delayedCall(800, () => {
+  this.tweens.add({
+    targets: loadingImg,
+    alpha: 0,
+    duration: 800,     // ✅ 여기서 속도 조절
+    ease: 'Sine.Out',
+    onComplete: () => {
+      loadingImg.destroy();
+      this.input.enabled = true; // ✅ 입력 풀기
+    }
+  });
+});
+
 
 
     let trayLocked = false;   // 트레이 클릭 막는 용
@@ -55,6 +85,15 @@ export default class Stage2Scene extends Phaser.Scene{
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+    // ✅ SFX 준비 (한 번만) //효과음
+    const sfxHoit = this.sound.add('hoit', { volume: 0.7 });
+    const sfxShalala = this.sound.add('shalala', {
+      volume: 0.8,
+      rate: 1.5,   // ✅ 1.25배속
+    });
+
+
 
     // 스코어 설정
     const SCORE = {
@@ -374,36 +413,65 @@ export default class Stage2Scene extends Phaser.Scene{
     const SUCCESS_SCORE = 30;
     const HIDDEN_CAT_SCORE = -405;
 
-    const handleEnding = () => {
-      console.log('🎬 handleEnding', {
-        totalScore,
-        pickedByPlate,
-      });
+const handleEnding = () => {
+  console.log('🎬 handleEnding', {
+    totalScore,
+    pickedByPlate,
+  });
 
-      // 히든 고양이 엔딩
-      if (totalScore <= HIDDEN_CAT_SCORE) {
-        this.scene.start('EndingC');
-        return;
-      }
+  // 히든 고양이 엔딩
+  if (totalScore <= HIDDEN_CAT_SCORE) {
+    fadeToScene(scene, 'EndingC', 350);
+    return;
+  }
 
-      // 성공 엔딩
-      if (totalScore >= SUCCESS_SCORE) {
-        const baseKey = pickedByPlate[0]; // 첫 plate = 베이스
+  // 성공 엔딩
+  if (totalScore >= SUCCESS_SCORE) {
+    const baseKey = pickedByPlate[0]; // 첫 plate = 베이스
 
-        const endingMap = {
-          dog: 'EndingA1',
-          cat: 'EndingA2',
-          duck: 'EndingA3',
-          bunny: 'EndingA4',
-        };
-
-        this.scene.start(endingMap[baseKey] ?? 'EndingA1');
-        return;
-      }
-
-      // 실패 엔딩
-      this.scene.start('EndingB');
+    const endingMap = {
+      dog: 'EndingA1',
+      cat: 'EndingA2',
+      duck: 'EndingA3',
+      bunny: 'EndingA4',
     };
+
+    const nextScene = endingMap[baseKey] ?? 'EndingA1';
+    fadeToScene(scene, nextScene, 350);
+    return;
+  }
+
+  // 실패 엔딩
+  fadeToScene(scene, 'EndingB', 350);
+};
+
+//     const handleEnding = () => {
+//   const sfx = this.sound.add('endingSfx', { volume: 0.8 });
+//   sfx.play();
+
+//   sfx.once('complete', () => {
+//     if (totalScore <= HIDDEN_CAT_SCORE) {
+//       this.scene.start('EndingC');
+//       return;
+//     }
+
+//     if (totalScore >= SUCCESS_SCORE) {
+//       const baseKey = pickedByPlate[0];
+//       const endingMap = {
+//         dog: 'EndingA1',
+//         cat: 'EndingA2',
+//         duck: 'EndingA3',
+//         bunny: 'EndingA4',
+//       };
+
+//       this.scene.start(endingMap[baseKey] ?? 'EndingA1');
+//       return;
+//     }
+
+//     this.scene.start('EndingB');
+//   });
+// };
+
 
 
 
@@ -465,7 +533,7 @@ export default class Stage2Scene extends Phaser.Scene{
       let baseY = img.scaleY;
       const amp = 0.50;            // 펄럭 폭
       const growRate = 1.2;       // 성장 속도
-      const maxY = baseY * 1.8;    // 최대 크기
+      const maxY = baseY * 1.6;    // 최대 크기
 
       const flapTween = scene.tweens.add({
         targets: img,
@@ -615,6 +683,8 @@ scene.input.dragDistanceThreshold = 0;
 icon.on('dragstart', (pointer) => {
   if (trayLocked) return;
 
+  if (!sfxHoit.isPlaying) sfxHoit.play();
+
   const dragKey = dragTextureMap[pieceKey] ?? trayKey;
 
   // clone은 월드에 생성(plateRect가 월드 판정이라서 ScrollFactor 1 유지)
@@ -652,6 +722,7 @@ icon.on('drag', (pointer) => {
   if (inside && !armedInside) {
     armedInside = true;
 
+
     // ✅ 여기서 원하는 락: “트레이만” 클릭 막기
     trayLocked = true;
     // trayIcons.forEach(ic => ic.disableInteractive?.());
@@ -674,6 +745,11 @@ icon.on('dragend', () => {
   // ✅ 손 뗄 때 판정 (기존 로직 그대로)
   if (armedInside) {
     onPlateFilled(armedPieceKey);
+
+    const isLastPlate = currentPlateIndex === plateConfigs.length - 1;
+    if (!isLastPlate) {
+      sfxShalala.play({ rate: 1.25 });
+    }
   } else {
     trayLocked = false;
     updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive

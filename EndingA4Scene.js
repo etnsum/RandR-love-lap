@@ -3,28 +3,33 @@ export default class EndingA4Scene extends Phaser.Scene {
 
     preload() {
     this.load.image('bunny', 'bunny.jpg');
+    this.load.video('ending', 'ending/bunny.mp4', 'loadeddata', false, true);
   }
 
-  create() {
-
-    const scene = this;
-    const gameWidth = this.scale.width;
-    const gameHeight = this.scale.height;
-
-    const img = this.add.image(gameWidth / 2, gameHeight / 2, 'bunny')
-      .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(25);
-
-    // ✅ 가로를 화면에 딱 맞추기(비율 유지)
-    const scale = gameWidth / img.width;
-    img.setScale(scale);
+create() {
+  this.cameras.main.fadeIn(350, 0, 0, 0);
+  const scene = this;
+  const gameWidth = this.scale.width;
+  const gameHeight = this.scale.height;
 
 
-    this.add.text(400, 400, '토끼엔딩 -고백에 성공했어!!', {
-      fontSize: '48px',
-      color: '#ffffff'
-    }).setOrigin(0.5)
-    .setDepth(30);
-  }
+  // 🎬 엔딩 영상
+  const video = this.add.video(gameWidth / 2, gameHeight / 2, 'ending')
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(26);
+
+  // 모바일 자동재생 대비
+  video.setMute(true);
+
+  // 재생
+  video.play();
+
+  // ✅ 끝나면 마지막 프레임에서 멈춤
+  video.once('complete', () => {
+    video.pause();   // 🔥 여기 핵심
+  });
+
+}
+
 }

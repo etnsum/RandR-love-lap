@@ -3,29 +3,32 @@ export default class EndingA3Scene extends Phaser.Scene {
 
     preload() {
     this.load.image('duck', 'duck.jpg');
+    this.load.video('ending', 'ending/duck.mp4', 'loadeddata', false, true);
   }
 
-  create() {
+create() {
+  this.cameras.main.fadeIn(350, 0, 0, 0);
+  const scene = this;
+  const gameWidth = this.scale.width;
+  const gameHeight = this.scale.height;
 
-    const scene = this;
-    const gameWidth = this.scale.width;
-    const gameHeight = this.scale.height;
+  // 🎬 엔딩 영상
+  const video = this.add.video(gameWidth / 2, gameHeight / 2, 'ending')
+    .setOrigin(0.5)
+    .setScrollFactor(0)
+    .setDepth(26);
 
+  // 모바일 자동재생 대비
+  video.setMute(true);
 
-    const img = this.add.image(gameWidth / 2, gameHeight / 2, 'duck')
-      .setOrigin(0.5)
-      .setScrollFactor(0)
-      .setDepth(25);
+  // 재생
+  video.play();
 
-    // ✅ 가로를 화면에 딱 맞추기(비율 유지)
-    const scale = gameWidth / img.width;
-    img.setScale(scale);
+  // ✅ 끝나면 마지막 프레임에서 멈춤
+  video.once('complete', () => {
+    video.pause();   // 🔥 여기 핵심
+  });
 
+}
 
-    this.add.text(400, 400, '오리엔딩- 고백에 성공했어!!', {
-      fontSize: '48px',
-      color: '#ffffff'
-    }).setOrigin(0.5)
-    .setDepth(30);
-  }
 }

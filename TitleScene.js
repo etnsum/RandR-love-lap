@@ -21,7 +21,7 @@ export default class TitleScene extends Phaser.Scene {
     // 제조 방법 닫기 버튼
     this.load.image('btnX', 'image/title/btnX.png');
     // 게임 브금
-    this.load.audio('bgm', 'pal.mp3');
+    this.load.audio('bgm', 'BGM.mp3');
     // 타이틀 애니메이션
     this.load.video('opening', 'images/title/open.mp4', 'loadeddata', false, true);
     // 효과음

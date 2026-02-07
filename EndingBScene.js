@@ -7,7 +7,8 @@ export default class EndingAScene extends Phaser.Scene {
   }
 
   create() {
-
+    
+    this.cameras.main.fadeIn(350, 0, 0, 0);
     const scene = this;
     const gameWidth = this.scale.width;
     const gameHeight = this.scale.height;
