@@ -8,27 +8,37 @@ export default class EndingA3Scene extends Phaser.Scene {
 
 create() {
   this.cameras.main.fadeIn(350, 0, 0, 0);
-  const scene = this;
+
   const gameWidth = this.scale.width;
   const gameHeight = this.scale.height;
 
-  // 🎬 엔딩 영상
   const video = this.add.video(gameWidth / 2, gameHeight / 2, 'ending')
     .setOrigin(0.5)
     .setScrollFactor(0)
     .setDepth(26);
 
-  // 모바일 자동재생 대비
   video.setMute(true);
+  video.setLoop(false);
 
-  // 재생
-  video.play();
+  let started = false;
 
-  // ✅ 끝나면 마지막 프레임에서 멈춤
-  video.once('complete', () => {
-    video.pause();   // 🔥 여기 핵심
-  });
+  const startVideo = () => {
+    if (started) return;
+    started = true;
 
+    video.setPaused(false);
+    video.play();
+
+    video.once('complete', () => {
+      video.pause();   // 마지막 프레임 유지
+    });
+  };
+
+  // ✅ 1) 타이틀처럼 살짝 딜레이 후 자동 재생 시도
+  this.time.delayedCall(200, startVideo);
+
+  // ✅ 2) 자동재생 막히면, 유저가 한 번 터치하면 재생
+  this.input.once('pointerdown', startVideo);
 }
 
 }
