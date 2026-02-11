@@ -8,8 +8,8 @@ export default class Stage2Scene extends Phaser.Scene{
   }
 
   preload() {
-    this.load.image('bgcolor', 'images/S2/bgcolor.png');
-    this.load.image('1bg', 'images/S2/1bg.png');
+    this.load.image('bgcolor', 'images/S2/bgcolor_half.png');
+    this.load.image('1bg', 'images/S2/bg1_half.png');
     this.load.image('board',   'image/basic/dag.png'); 
     this.load.image('box', 'images/S2/box.png'); //재료창
     this.load.audio('shalala', 'sound/shalala.mp3');
@@ -37,9 +37,16 @@ export default class Stage2Scene extends Phaser.Scene{
     const DEPTH_BOARD    = 999;
 
     // 월드 크기
+
+    const WORLD_WIDTH = 5808;
+    const WORLD_HEIGHT = 4448;
     const bg = this.add.image(0, 0, 'bgcolor')
       .setOrigin(0, 0)
       .setDepth(DEPTH_BG);
+
+    bg.setDisplaySize(WORLD_WIDTH, WORLD_HEIGHT);
+    //setScale(2)
+    //setDisplaySize(WORLD_WIDTH, WORLD_HEIGHT);
 
     scene.add.image(728.7, 1398, 'board')
       .setOrigin(0.5, 0.5)
@@ -49,13 +56,21 @@ export default class Stage2Scene extends Phaser.Scene{
       
     // 플라스크
     const plateBg1 = this.add.image(
-      bg.width / 2,
-      bg.height / 2,
+  WORLD_WIDTH / 2,
+  WORLD_HEIGHT / 2,
       '1bg'
     )
       .setOrigin(0.5, 0.5);
-    const WORLD_WIDTH = bg.width;
-    const WORLD_HEIGHT = bg.height;
+
+    plateBg1.setScale(2)
+    //setDisplaySize(WORLD_WIDTH, WORLD_HEIGHT);
+
+//     const WORLD_LEFT = -1000;
+// const WORLD_TOTAL_WIDTH = WORLD_WIDTH + 1000;
+// const cam = this.cameras.main;
+// cam.setBounds(WORLD_LEFT, 0, WORLD_TOTAL_WIDTH, WORLD_HEIGHT);
+
+
 
     const cam = this.cameras.main;
     cam.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
@@ -109,7 +124,7 @@ export default class Stage2Scene extends Phaser.Scene{
     // 재료 설정
     const plateConfigs = [
       {
-        center: { x: 1120, y: 1950.185 },
+        center: { x: 1120, y: 1950.185 }, //1120
         trayPieces: ['duck', 'cat', 'dog',  'bunny'],
         descKey: 'animal',    
         overlayMode: 'local',
@@ -834,12 +849,14 @@ const focusCameraOnPlate = (index, instant = false) => {
     const targetScrollX = Phaser.Math.Clamp(
       c.x - gameWidth / 2,
       cam._bounds.x,
-      cam._bounds.right - gameWidth
+      cam._bounds.right - gameWidth,
+      //WORLD_WIDTH - gameWidth,
     );
     const targetScrollY = Phaser.Math.Clamp(
       c.y - gameHeight / 2,
       cam._bounds.y,
       cam._bounds.bottom - gameHeight
+      //WORLD_HEIGHT - gameHeight
     );
 
 const finish = () => {
@@ -883,6 +900,7 @@ const finish = () => {
       });
     }
   });
+
 };
 
     // 시작
