@@ -7,6 +7,13 @@ export default class Stage2Scene extends Phaser.Scene{
     super('Stage2');
   }
 
+  init() {
+  this.totalScore = 0;
+  this.pickedByPlate = {}; // plateIndex -> pieceKey
+  this.added = {};         // pieceKey -> true
+}
+
+
   preload() {
     this.load.image('bgcolor', 'images/S2/bgcolor_half.png');
     this.load.image('1bg', 'images/S2/bg1_half.png');
@@ -14,6 +21,8 @@ export default class Stage2Scene extends Phaser.Scene{
     this.load.image('box', 'images/S2/box.png'); //재료창
     this.load.audio('shalala', 'sound/shalala.mp3');
     this.load.audio('hoit', 'sound/hoit.mp3');
+    this.load.image('particle1', 'images/S2/particle1.png');
+    this.load.image('particle2', 'images/S2/particle2.png');
 
   }
 
@@ -384,17 +393,14 @@ export default class Stage2Scene extends Phaser.Scene{
       };
     };
 
-    
 
-
-
-    // 엔딩/판정 로직(수정해야됨)
 
     // 엔딩/판정 로직
-    let totalScore = 0;
-    const pickedByPlate = {}; // plateIndex -> pieceKey
+    // let totalScore = 0;
+    // const pickedByPlate = {}; // plateIndex -> pieceKey
 
-    const added = {}; // pieceKey별로 true 기록 (원하면 p1/p2 이런식으로 바꿔도 됨)
+    // const added = {}; // pieceKey별로 true 기록 (원하면 p1/p2 이런식으로 바꿔도 됨)
+
 
     const isInsidePlateRect = (x, y, rect) =>
       x >= rect.x1 && x <= rect.x2 && y >= rect.y1 && y <= rect.y2;
@@ -414,22 +420,22 @@ export default class Stage2Scene extends Phaser.Scene{
 
 const handleEnding = () => {
   console.log('🎬 handleEnding', {
-    totalScore,
-    pickedByPlate,
+    totalScore: this.totalScore,
+    pickedByPlate: this.pickedByPlate,
   });
 
     // 🔥 엔딩 가기 전에 BGM 정지
   stopGlobalMusic.call(this);
 
   // 히든 고양이 엔딩
-  if (totalScore <= HIDDEN_CAT_SCORE) {
-    fadeToScene(scene, 'EndingC', 350);
+  if (this.totalScore <= HIDDEN_CAT_SCORE) {
+    fadeToScene(this, 'EndingC', 350);
     return;
   }
 
   // 성공 엔딩
-  if (totalScore >= SUCCESS_SCORE) {
-    const baseKey = pickedByPlate[0]; // 첫 plate = 베이스
+  if (this.totalScore >= SUCCESS_SCORE) {
+    const baseKey = this.pickedByPlate[0]; // 첫 plate = 베이스
 
     const endingMap = {
       dog: 'EndingA1',
@@ -439,12 +445,12 @@ const handleEnding = () => {
     };
 
     const nextScene = endingMap[baseKey] ?? 'EndingA1';
-    fadeToScene(scene, nextScene, 350);
+    fadeToScene(this, nextScene, 350);
     return;
   }
 
   // 실패 엔딩
-  fadeToScene(scene, 'EndingB', 350);
+  fadeToScene(this, 'EndingB', 350);
 };
 
 //     const handleEnding = () => {
@@ -516,7 +522,8 @@ const handleEnding = () => {
         .setDepth(DEPTH_WORLD + 5);
 
       if (isFull) {
-        img.setScale(plateBg1.scaleX, plateBg1.scaleY);
+        //img.setScale(plateBg1.scaleX, plateBg1.scaleY);
+        img.setScale(1);
       }
 
       // 페이드
@@ -570,20 +577,67 @@ const handleEnding = () => {
     const onPlateFilled = (pieceKey) => {
       if (isTransitioning) return;
 
+        // // ✅ 중복 방지 먼저
+        // if (this.added[pieceKey]) return;
+        // this.added[pieceKey] = true;
+
+
         const score = SCORE[pieceKey] ?? 0;
 
-        totalScore += score;
-        pickedByPlate[currentPlateIndex] = pieceKey;
+        this.totalScore += score;
+        this.pickedByPlate[currentPlateIndex] = pieceKey;
 
         console.log(
           '🧪 plate', currentPlateIndex,
           'pick', pieceKey,
           'score', score,
-          'TOTAL', totalScore
+          'TOTAL', this.totalScore
         );
 
-      added[pieceKey] = true;
+      this.added[pieceKey] = true;
       applyOverlay(currentPlateIndex, pieceKey);
+
+      // ✨ 반짝 효과 추가
+    const particleKeys = ['particle1', 'particle2'];
+    const config = plateConfigs[currentPlateIndex];
+    const basePos = config.overlayPos ?? config.center;
+
+    const offsets = config.overlayPos
+      ? [
+          { x: -250, y: -200 },
+          { x:  120, y: -320 }
+        ]
+      : [
+          { x: -250, y: -300 },
+          { x:  250, y: -400 }
+        ];
+
+    particleKeys.forEach((key, i) => {
+
+      const sparkle = scene.add.image(
+        basePos.x + offsets[i].x,
+        basePos.y + offsets[i].y,
+        key
+      )
+      .setDepth(9999)
+      .setScale(0.5)
+      .setAlpha(0);
+
+      scene.tweens.add({
+        targets: sparkle,
+        alpha: 1,
+        scale: 1,
+        duration: 200,
+        ease: 'Sine.Out',
+        yoyo: true,
+        hold: 200,
+        onComplete: () => sparkle.destroy()
+      });
+
+    });
+
+
+
 
       isTransitioning = true;
 

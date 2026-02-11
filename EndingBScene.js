@@ -5,6 +5,8 @@ export default class EndingAScene extends Phaser.Scene {
       preload() {
     this.load.video('ending', 'ending/fail.mp4', 'loadeddata', false, true);
     this.load.image('restart', 'image/title/restart.png');
+    this.load.image('last', 'ending/click.png');
+    this.load.audio('btnHover', 'sound/BByorong.mp3');
   }
 
 create() {
@@ -23,17 +25,43 @@ create() {
 
   let started = false;
 
+  const clickOverlay = this.add.image(
+  gameWidth / 2,
+  gameHeight / 2,
+  'last'
+)
+.setOrigin(0.5)
+.setDepth(27)   // 영상보다 위
+.setScrollFactor(0);
+
+
   const startVideo = () => {
     if (started) return;
     started = true;
 
     video.setPaused(false);
     video.play();
+    clickOverlay.destroy();
 
     video.once('complete', () => {
       video.pause();   // 마지막 프레임 유지
 
-            const retryBtn = this.add.image(
+
+       // 효과음
+    const hoverSound = this.sound.add('btnHover', {
+      volume: 0.4,
+    });
+
+    const addClickSound = (btn) => {
+      if (!btn) return;
+
+      btn.on('pointerdown', () => {
+        if (!btn.input?.enabled) return;
+        hoverSound.play();
+      });
+    };
+
+    const retryBtn = this.add.image(
         1054.1948, 2233.908,
         'restart'      // png 키
       )
@@ -41,6 +69,8 @@ create() {
       .setScrollFactor(0)
       .setDepth(30)
       .setInteractive({ useHandCursor: true });
+
+      addClickSound(retryBtn)
 
       retryBtn.on('pointerdown', () => {
         this.scene.start('Title');
