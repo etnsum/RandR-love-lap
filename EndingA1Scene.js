@@ -26,13 +26,13 @@ create() {
 
   let started = false;
 
-    const clickOverlay = this.add.image(
+  const clickOverlay = this.add.image(
   gameWidth / 2,
   gameHeight / 2,
   'last'
 )
 .setOrigin(0.5)
-.setDepth(27)   // 영상보다 위
+.setDepth(30)   // 영상보다 위
 .setScrollFactor(0);
 
 
@@ -42,7 +42,7 @@ create() {
 
     video.setPaused(false);
     video.play();
-      this.time.delayedCall(1000, () => {
+      this.time.delayedCall(2000, () => {
     if (clickOverlay && clickOverlay.active) {
       clickOverlay.destroy();
     }
