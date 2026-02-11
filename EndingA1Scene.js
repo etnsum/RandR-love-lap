@@ -23,6 +23,7 @@ create() {
   video.setMute(false);
   video.setLoop(false);
 
+
   let started = false;
 
     const clickOverlay = this.add.image(
@@ -41,7 +42,11 @@ create() {
 
     video.setPaused(false);
     video.play();
-    clickOverlay.destroy();
+      this.time.delayedCall(1000, () => {
+    if (clickOverlay && clickOverlay.active) {
+      clickOverlay.destroy();
+    }
+  });
 
     video.once('complete', () => {
       video.pause();   // 마지막 프레임 유지
@@ -78,7 +83,7 @@ create() {
   };
 
   // ✅ 1) 타이틀처럼 살짝 딜레이 후 자동 재생 시도
-  this.time.delayedCall(100, startVideo);
+  //this.time.delayedCall(100, startVideo);
 
   // ✅ 2) 자동재생 막히면, 유저가 한 번 터치하면 재생
   this.input.once('pointerdown', startVideo);
