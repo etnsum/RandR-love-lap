@@ -387,11 +387,24 @@ export default class Stage2Scene extends Phaser.Scene{
     const SUCCESS_SCORE = 28;
     const HIDDEN_CAT_SCORE = -405;
 
+
+    const stopGlobalMusic = () => {
+  if (this.game.globalMusic) {
+    this.game.globalMusic.stop();
+    this.game.globalMusic.destroy();
+    this.game.globalMusic = null;
+  }
+};
+
+
 const handleEnding = () => {
   console.log('🎬 handleEnding', {
     totalScore,
     pickedByPlate,
   });
+
+    // 🔥 엔딩 가기 전에 BGM 정지
+  stopGlobalMusic.call(this);
 
   // 히든 고양이 엔딩
   if (totalScore <= HIDDEN_CAT_SCORE) {

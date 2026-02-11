@@ -2,7 +2,8 @@ export default class EndingA2Scene extends Phaser.Scene {
   constructor() { super('EndingA2'); }
 
     preload() {
-    this.load.video('ending', 'ending/cat2.mp4', 'loadeddata', false, true);
+    this.load.video('ending', 'ending/cat.mp4', 'loadeddata', false, true);
+    this.load.image('restart', 'image/title/restart.png');
   }
 
 create() {
@@ -16,7 +17,7 @@ create() {
     .setScrollFactor(0)
     .setDepth(26);
 
-  video.setMute(true);
+  video.setMute(false);
   video.setLoop(false);
 
   let started = false;
@@ -30,6 +31,19 @@ create() {
 
     video.once('complete', () => {
       video.pause();   // 마지막 프레임 유지
+
+            const retryBtn = this.add.image(
+        1054.1948, 2233.908,
+        'restart'      // png 키
+      )
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(30)
+      .setInteractive({ useHandCursor: true });
+
+      retryBtn.on('pointerdown', () => {
+        this.scene.start('Title');
+      });
     });
   };
 
