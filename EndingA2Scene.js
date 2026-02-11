@@ -30,7 +30,7 @@ create() {
   'last'
 )
 .setOrigin(0.5)
-.setDepth(27)   // 영상보다 위
+.setDepth(30)   // 영상보다 위
 .setScrollFactor(0);
 
 

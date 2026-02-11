@@ -11,6 +11,7 @@ export default class Stage2Scene extends Phaser.Scene{
   this.totalScore = 0;
   this.pickedByPlate = {}; // plateIndex -> pieceKey
   this.added = {};         // pieceKey -> true
+  this.currentPlateIndex = 0;
 }
 
 
@@ -340,7 +341,7 @@ export default class Stage2Scene extends Phaser.Scene{
       return rect;
     });
 
-    let currentPlateIndex = 0;
+    //let currentPlateIndex = 0;
 
     // 디버그
     // const debugRects = [];
@@ -585,21 +586,21 @@ const handleEnding = () => {
         const score = SCORE[pieceKey] ?? 0;
 
         this.totalScore += score;
-        this.pickedByPlate[currentPlateIndex] = pieceKey;
+        this.pickedByPlate[this.currentPlateIndex] = pieceKey;
 
         console.log(
-          '🧪 plate', currentPlateIndex,
+          '🧪 plate', this.currentPlateIndex,
           'pick', pieceKey,
           'score', score,
           'TOTAL', this.totalScore
         );
 
       this.added[pieceKey] = true;
-      applyOverlay(currentPlateIndex, pieceKey);
+      applyOverlay(this.currentPlateIndex, pieceKey);
 
       // ✨ 반짝 효과 추가
     const particleKeys = ['particle1', 'particle2'];
-    const config = plateConfigs[currentPlateIndex];
+    const config = plateConfigs[this.currentPlateIndex];
     const basePos = config.overlayPos ?? config.center;
 
     const offsets = config.overlayPos
@@ -648,7 +649,7 @@ const handleEnding = () => {
       scene.time.delayedCall(EFFECT_DELAY, () => {
         isTransitioning = false;
 
-        const isLast = currentPlateIndex === plateConfigs.length - 1;
+        const isLast = this.currentPlateIndex === plateConfigs.length - 1;
 
         if (isLast) {
           scene.time.delayedCall(ENDING_DELAY, () => {
@@ -658,7 +659,7 @@ const handleEnding = () => {
         }
 
         scene.time.delayedCall(CAMERA_DELAY, () => {
-          focusCameraOnPlate(currentPlateIndex + 1);
+          focusCameraOnPlate(this.currentPlateIndex + 1);
         });
       });
 
@@ -772,7 +773,7 @@ icon.on('drag', (pointer) => {
   const screenY = activeDrag.y - cam.scrollY;
 
   // ✅ “들어갔는지”만 체크하고, 사라지게 하지 말기 (기존 로직 그대로)
-  const rect = plateRects[currentPlateIndex];
+  const rect = plateRects[this.currentPlateIndex];
   const inside = isInsidePlateRect(activeDrag.x, activeDrag.y, rect);
 
   if (inside && !armedInside) {
@@ -802,13 +803,13 @@ icon.on('dragend', () => {
   if (armedInside) {
     onPlateFilled(armedPieceKey);
 
-    const isLastPlate = currentPlateIndex === plateConfigs.length - 1;
+    const isLastPlate = this.currentPlateIndex === plateConfigs.length - 1;
     if (!isLastPlate) {
       sfxShalala.play({ rate: 1.25 });
     }
   } else {
     trayLocked = false;
-    updateTrayForPlate(currentPlateIndex); // 아이콘들 다시 interactive
+    updateTrayForPlate(this.currentPlateIndex); // 아이콘들 다시 interactive
   }
 
   armedInside = false;
@@ -918,7 +919,7 @@ const finish = () => {
 
   // ✅ 현재 plate 갱신 먼저 (여기서 trayIcons destroy 됨)
   loadedPlateKeys = nextKeys;
-  currentPlateIndex = index;
+  this.currentPlateIndex = index;
   updateTrayForPlate(index);
 
   // ✅ 이제 언로드 (레이어드/공통은 보호)
