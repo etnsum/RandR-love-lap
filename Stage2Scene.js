@@ -588,6 +588,8 @@ const handleEnding = () => {
         this.totalScore += score;
         this.pickedByPlate[this.currentPlateIndex] = pieceKey;
 
+         console.log('DEBUG set picked', this.currentPlateIndex, pieceKey, this.pickedByPlate);
+
         console.log(
           '🧪 plate', this.currentPlateIndex,
           'pick', pieceKey,

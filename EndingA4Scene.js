@@ -2,7 +2,7 @@ export default class EndingA4Scene extends Phaser.Scene {
   constructor() { super('EndingA4'); }
 
     preload() {
-    this.load.video('ending', 'ending/bunny.mp4', 'loadeddata', false, true);
+    this.load.video('ending4', 'ending/bunny.mp4', 'loadeddata', false, true);
     this.load.image('restart', 'image/title/restart.png');
     this.load.image('last', 'ending/click.png');
     this.load.audio('btnHover', 'sound/BByorong.mp3');
@@ -14,7 +14,7 @@ create() {
   const gameWidth = this.scale.width;
   const gameHeight = this.scale.height;
 
-  const video = this.add.video(gameWidth / 2, gameHeight / 2, 'ending')
+  const video = this.add.video(gameWidth / 2, gameHeight / 2, 'ending4')
     .setOrigin(0.5)
     .setScrollFactor(0)
     .setDepth(26);
@@ -40,7 +40,11 @@ create() {
 
     video.setPaused(false);
     video.play();
-    clickOverlay.destroy();
+    this.time.delayedCall(1000, () => {
+      if (clickOverlay?.active) {
+        clickOverlay.destroy();
+      }
+    });
 
     video.once('complete', () => {
       video.pause();   // 마지막 프레임 유지
