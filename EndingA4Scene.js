@@ -32,13 +32,11 @@ create() {
 .setOrigin(0.5)
 .setDepth(30)   // 영상보다 위
 .setScrollFactor(0)
-.setInteractive();   // 터치 감지
+.setInteractive({ useHandCursor: true });
 
-// 👇 오버레이 터치 시 제거
+// 👇 오버레이 터치하면 그냥 사라짐
 clickOverlay.once('pointerdown', () => {
-  if (clickOverlay?.active) {
-    clickOverlay.destroy();
-  }
+  clickOverlay.destroy();
 });
 
 
