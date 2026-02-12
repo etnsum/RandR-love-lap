@@ -32,7 +32,15 @@ create() {
 )
 .setOrigin(0.5)
 .setDepth(30)   // 영상보다 위
-.setScrollFactor(0);
+.setScrollFactor(0)
+.setInteractive();   // 터치 감지
+
+// 👇 오버레이 터치 시 제거
+clickOverlay.once('pointerdown', () => {
+  if (clickOverlay?.active) {
+    clickOverlay.destroy();
+  }
+});
 
 
   const startVideo = () => {
@@ -41,11 +49,7 @@ create() {
 
     video.setPaused(false);
     video.play();
-    this.time.delayedCall(2000, () => {
-      if (clickOverlay?.active) {
-        clickOverlay.destroy();
-      }
-    });
+
 
     video.once('complete', () => {
       video.pause();   // 마지막 프레임 유지
