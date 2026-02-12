@@ -41,7 +41,7 @@ create() {
 
     video.setPaused(false);
     video.play();
-    this.time.delayedCall(1000, () => {
+    this.time.delayedCall(2000, () => {
       if (clickOverlay?.active) {
         clickOverlay.destroy();
       }
